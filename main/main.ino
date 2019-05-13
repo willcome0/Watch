@@ -58,27 +58,13 @@ void setup() {
     BLINKER_DEBUG.stream(Serial);
 
     // lcd_init();
-creat_task();
+    creat_task();
 
-    // pinMode(RGB_R_PIN, OUTPUT);
-    // digitalWrite(RGB_R_PIN, HIGH);
-
-    /* 固定密码 */
-    // Blinker.begin(auth, ssid, pswd);
-    // Blinker.attachData(dataRead);
-    /* 动态配网 */
     Blinker.begin(auth);
     Blinker.attachData(dataRead);
 
     BridgeDevice1.attach(bridge1_callback);
     Button1.attach(button1_callback);
-
-
-    // lcd_fill(0, 0, 100, 100, BLUE);
-    // lcd_draw_line(100, 100, 200, 200, RED);
-    // lcd_show_char(200, 200, WHITE, BLACK, 'K', 24, 1);
-    // lcd_show_num(100, 100, WHITE, BLACK, 12345, 6, 24, '0', 1);
-    // lcd_show_str(0, 0, WHITE, BLACK, "你好世界abcdABCD", 16, 1);
 
     /* 获取时间，完全不准 */
     // delay(5000);

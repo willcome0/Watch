@@ -1,5 +1,7 @@
-#include "blinker.h"
+#include "blinker_func.h"
+#include <Blinker.h>
 
+char auth[] = "4844c3d968a6";
 
 BlinkerButton Button1("btn-ky");
 BlinkerBridge BridgeDevice1("94bc03e0c17c");
@@ -30,7 +32,7 @@ void blinker_init(void)
 {
     BLINKER_DEBUG.stream(Serial);
 
-    Blinker.begin("4844c3d968a6");
+    Blinker.begin(auth);
     Blinker.attachData(blinker_callback);
 
     BridgeDevice1.attach(bridge1_callback);

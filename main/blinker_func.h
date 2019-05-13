@@ -1,8 +1,9 @@
-#ifndef __BLINKER_H
-#define __BLINKER_H
+#ifndef __BLINKER_FUNC_H
+#define __BLINKER_FUNC_H
 
 #include "stdlib.h"
 #include "Arduino.h"
+
 
 #ifdef __cplusplus
  extern "C" {
