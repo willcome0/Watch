@@ -4,75 +4,80 @@
 #include <Blinker.h>
 #include "lcd.h"
 #include "task.h"
+#include "led.h"
 
-
-char auth[] = "4844c3d968a6";
-// char ssid[] = "RT-AC56U";
-// char pswd[] = "kangkang";
-
-#define RGB_R_PIN 23
-
+uint8_t RR, GG, BB, Bright;
 // 新建组件对象
-BlinkerButton Button1("btn-ky");
-BlinkerBridge BridgeDevice1("94bc03e0c17c");
+BlinkerBridge g_rgb_device("94bc03e0c17c");
+BlinkerButton g_rgb_button("rgb_button");
+BlinkerRGB    g_rgb_led("rgb_led");
+
+void blinker_callback(const String & data);
+
+void rgb_device_callback(const String & data);
+void rgb_button_callback(const String & state);
+void rgb_led_callback(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t bright_value);
 
 
-/************* 回调 *************/
-void bridge1_callback(const String & data)
-{
-    BLINKER_LOG("BridgeDevice1 readString: ", data);    
-}
-
-void button1_callback(const String & state)
-{
-    BLINKER_LOG("btn-ky按键回调", state);
-    digitalWrite(RGB_R_PIN, !digitalRead(RGB_R_PIN));
-}
-
-void dataRead(const String & data)
-{
-    // 不触发其他回调时也会来这
-    BLINKER_LOG("设备回调", data);
-
-    // must print Json data
-    BridgeDevice1.print("{\"hello\":\"bridge\"}");
-}
-
-const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = 3600;
-const int   daylightOffset_sec = 3600;
-void printLocalTime()
-{
-  struct tm timeinfo;
-  if(!getLocalTime(&timeinfo)){
-    Serial.println("Failed to obtain time");
-    return;
-  }
-  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-}
 
 
 /*******************************/
 void setup() {
     Serial.begin(115200);
-    BLINKER_DEBUG.stream(Serial);
+    
 
     // lcd_init();
-    creat_task();
+    // creat_task();
+    led_init();
 
-    Blinker.begin(auth);
-    Blinker.attachData(dataRead);
+    BLINKER_DEBUG.stream(Serial);
+    Blinker.begin("b914310a8ac1");
+    Blinker.attachData(blinker_callback);
 
-    BridgeDevice1.attach(bridge1_callback);
-    Button1.attach(button1_callback);
-
-    /* 获取时间，完全不准 */
-    // delay(5000);
-    // configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-    // printLocalTime();
+    g_rgb_device.attach(rgb_device_callback);
+    g_rgb_button.attach(rgb_button_callback);
+    g_rgb_led.attach(rgb_led_callback);
 }
 
 void loop()
 {
     Blinker.run();
+    rgb_set(RR, GG, BB, Bright);
 }
+
+
+
+
+
+void blinker_callback(const String & data)
+{
+    // 不触发其他回调时也会来这
+    BLINKER_LOG("设备回调", data);
+
+    // must print Json data
+    g_rgb_device.print("{\"hello\":\"bridge\"}");
+}
+
+void rgb_device_callback(const String & data)
+{
+    BLINKER_LOG("BridgeDevice1 readString: ", data);    
+}
+
+void rgb_button_callback(const String & state)
+{
+    BLINKER_LOG("btn-ky按键回调", state);
+    digitalWrite(4, !digitalRead(4));
+}
+
+void rgb_led_callback(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t bright_value)
+{
+    RR = r_value;
+    GG = g_value;
+    BB = b_value;
+    Bright = bright_value;
+    BLINKER_LOG("R value: ", r_value);
+    BLINKER_LOG("G value: ", g_value);
+    BLINKER_LOG("B value: ", b_value);
+    BLINKER_LOG("Rrightness value: ", bright_value);
+}
+

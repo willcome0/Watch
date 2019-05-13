@@ -1,8 +1,8 @@
 #include "led.h"
 
-#define PIN_NUM_LED_R 26
+#define PIN_NUM_LED_R 27
 #define PIN_NUM_LED_G 25
-#define PIN_NUM_LED_B 27
+#define PIN_NUM_LED_B 26
 
 #define LCD_LEDA 14
 #define MOTOR1  32
@@ -60,6 +60,16 @@ void led_init(void)
     ledcSetup(4, LED_FREQ, LED_BIT_NUM);
     ledcSetup(5, LED_FREQ, LED_BIT_NUM);
     ledcSetup(6, LED_FREQ, LED_BIT_NUM);
+}
+
+void rgb_set(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t bright_value)
+{
+    ledcWrite(1, (255 - r_value)*(255-bright_value)/255);
+    ledcWrite(2, (255 - g_value)*(255-bright_value)/255);
+    ledcWrite(3, (255 - b_value)*(255-bright_value)/255);
+    // ledcWrite(1, (255 - r_value));
+    // ledcWrite(2, (255 - g_value));
+    // ledcWrite(3, (255 - b_value));
 }
 
 void hueToRGB(uint8_t hue, uint8_t brightness)

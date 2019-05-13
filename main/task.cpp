@@ -16,12 +16,12 @@
 
 void creat_task(void)
 {
-    xTaskCreatePinnedToCore(
-        task_led,
-        "task_led",
-        1024,
-        NULL, 2, // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
-        NULL, ARDUINO_RUNNING_CORE);
+    // xTaskCreatePinnedToCore(
+    //     task_led,
+    //     "task_led",
+    //     1024,
+    //     NULL, 2, // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+    //     NULL, ARDUINO_RUNNING_CORE);
 
     // xTaskCreatePinnedToCore(
     //     task_bat_adc,
@@ -30,10 +30,10 @@ void creat_task(void)
     //     NULL, 2, // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
     //     NULL, ARDUINO_RUNNING_CORE);
         
-        xTaskCreatePinnedToCore(
-        task_key,
-        "task_key",
-        1024,
-        NULL, 2, // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
-        NULL, ARDUINO_RUNNING_CORE);
+        // xTaskCreatePinnedToCore(
+        // task_key,
+        // "task_key",
+        // 1024,
+        // NULL, 2, // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+        // NULL, ARDUINO_RUNNING_CORE);
 }
