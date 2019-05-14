@@ -2,11 +2,14 @@
 #define BLINKER_ESP_SMARTCONFIG
 
 #include <Blinker.h>
+#include <string.h>
 #include "lcd.h"
 #include "task.h"
 #include "led.h"
 
 uint8_t RR, GG, BB, Bright;
+uint8_t RR_Old, GG_Old, BB_Old;
+
 // 新建组件对象
 BlinkerBridge g_rgb_device("94bc03e0c17c");
 BlinkerButton g_rgb_button("rgb_button");
@@ -65,8 +68,34 @@ void rgb_device_callback(const String & data)
 
 void rgb_button_callback(const String & state)
 {
+    const String bnt_tap = "tap";
+    static uint8_t rgb_on = 0;
+
     BLINKER_LOG("btn-ky按键回调", state);
-    digitalWrite(4, !digitalRead(4));
+    if (bnt_tap == state)
+    {
+        rgb_on = !rgb_on;
+    }
+    if (rgb_on)
+    {
+        RR = RR_Old;
+        GG = GG_Old;
+        BB = BB_Old;
+        g_rgb_button.text("开", "开");
+        g_rgb_button.print();
+    }
+    else
+    {
+        RR_Old = RR;
+        GG_Old = GG;
+        BB_Old = BB;
+        RR = 0;
+        GG = 0;
+        BB = 0;
+        g_rgb_button.text("关", "关");
+        g_rgb_button.print();
+    }
+    
 }
 
 void rgb_led_callback(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t bright_value)

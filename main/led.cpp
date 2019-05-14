@@ -64,12 +64,12 @@ void led_init(void)
 
 void rgb_set(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t bright_value)
 {
-    ledcWrite(1, (255 - r_value)*(255-bright_value)/255);
-    ledcWrite(2, (255 - g_value)*(255-bright_value)/255);
-    ledcWrite(3, (255 - b_value)*(255-bright_value)/255);
-    // ledcWrite(1, (255 - r_value));
-    // ledcWrite(2, (255 - g_value));
-    // ledcWrite(3, (255 - b_value));
+    // ledcWrite(1, (255 - r_value)*(255-bright_value)/255);
+    // ledcWrite(2, (255 - g_value)*(255-bright_value)/255);
+    // ledcWrite(3, (255 - b_value)*(255-bright_value)/255);
+    ledcWrite(1, (255 - r_value));
+    ledcWrite(2, (255 - g_value));
+    ledcWrite(3, (255 - b_value));
 }
 
 void hueToRGB(uint8_t hue, uint8_t brightness)
