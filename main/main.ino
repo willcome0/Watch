@@ -7,11 +7,15 @@
 #include "task.h"
 #include "led.h"
 
+char auth[] = "b914310a8ac1";
+// char ssid[] = "will的iPhone";
+// char pswd[] = "kangkang";
+
 uint8_t RR, GG, BB, Bright;
 uint8_t RR_Old, GG_Old, BB_Old;
 
 // 新建组件对象
-BlinkerBridge g_rgb_device("94bc03e0c17c");
+BlinkerBridge g_rgb_device("968276a8d249");
 BlinkerButton g_rgb_button("rgb_button");
 BlinkerRGB    g_rgb_led("rgb_led");
 
@@ -28,10 +32,8 @@ void rgb_led_callback(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t
 void setup() {
     Serial.begin(115200);
     
-
-    // lcd_init();
-    // creat_task();
-    led_init();
+    
+    creat_task();
 
     BLINKER_DEBUG.stream(Serial);
     Blinker.begin("b914310a8ac1");
@@ -40,12 +42,14 @@ void setup() {
     g_rgb_device.attach(rgb_device_callback);
     g_rgb_button.attach(rgb_button_callback);
     g_rgb_led.attach(rgb_led_callback);
+
+    
 }
 
 void loop()
 {
     Blinker.run();
-    rgb_set(RR, GG, BB, Bright);
+    // rgb_set(RR, GG, BB, Bright);
 }
 
 
@@ -95,7 +99,6 @@ void rgb_button_callback(const String & state)
         g_rgb_button.text("关", "关");
         g_rgb_button.print();
     }
-    
 }
 
 void rgb_led_callback(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t bright_value)

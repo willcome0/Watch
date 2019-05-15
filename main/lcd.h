@@ -66,6 +66,15 @@ void lcd_show_str(u16 x, u16 y, u16 fc, u16 bc, char *str, u8 size, u8 cover);
 void lcd_show_img(u16 x, u16 y, u16 width, u16 height, const u8 *p, u8 colorful);
 void lcd_show_img_bin(u16 x, u16 y, u16 width, u16 height, u16 fc, u16 bc, const u8 *img, u8 cover);
 
+void lcd_show_img_bat(uint8_t show_flag);
+void lcd_show_img_charge(uint8_t show_flag);
+
+void ui_show_dial(void);
+void ui_show_device(void);
+void ui_show_game(void);
+void ui_show_set(void);
+void ui_show_help(void);
+
 #ifdef __cplusplus
 }
 #endif

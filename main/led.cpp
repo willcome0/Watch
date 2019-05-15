@@ -26,25 +26,9 @@ void led_init(void)
     // digitalWrite(PIN_NUM_LED_G, HIGH);
     // digitalWrite(PIN_NUM_LED_B, HIGH);
 
-    // digitalWrite(LCD_LEDA, HIGH);
-    // digitalWrite(MOTOR1, HIGH);
-    // digitalWrite(MOTOR2, HIGH);
-    // digitalWrite(TP_RST, HIGH);
-    // digitalWrite(LCD_DC, HIGH);
-    // digitalWrite(LCD_RST, HIGH);
-    // digitalWrite(KEY, HIGH);
-
     // pinMode(PIN_NUM_LED_R, OUTPUT);
     // pinMode(PIN_NUM_LED_G, OUTPUT);
     // pinMode(PIN_NUM_LED_B, OUTPUT);
-
-    // pinMode(LCD_LEDA, OUTPUT);
-    // pinMode(MOTOR1, OUTPUT);
-    // pinMode(MOTOR2, OUTPUT);
-    // pinMode(TP_RST, OUTPUT);
-    // pinMode(LCD_DC, OUTPUT);
-    // pinMode(LCD_RST, OUTPUT);
-    // pinMode(KEY, OUTPUT);
 
     ledcAttachPin(PIN_NUM_LED_R, 1);
     ledcAttachPin(PIN_NUM_LED_G, 2);
@@ -131,61 +115,38 @@ void task_led(void *pvParameters)
 {
     (void)pvParameters;
     led_init();
-
+    // ledcWrite(1, 255);
+    //     ledcWrite(2, 255);
+    //     ledcWrite(3, 255);
+    ledcWrite(4, 255);
     for (;;)
     {
-    // digitalWrite(PIN_NUM_LED_R, HIGH);
-    // digitalWrite(PIN_NUM_LED_G, HIGH);
-    // digitalWrite(PIN_NUM_LED_B, HIGH);
+        // digitalWrite(PIN_NUM_LED_R, HIGH);
+        // digitalWrite(PIN_NUM_LED_G, HIGH);
+        // digitalWrite(PIN_NUM_LED_B, HIGH);
+        ledcWrite(1, 200);
+        ledcWrite(2, 200);
+        ledcWrite(3, 200);
+            vTaskDelay(2000);
+            
+        // digitalWrite(PIN_NUM_LED_R, LOW);
+        // digitalWrite(PIN_NUM_LED_G, LOW);
+        // digitalWrite(PIN_NUM_LED_B, LOW);
+        ledcWrite(1, 0);
+        ledcWrite(2, 0);
+        ledcWrite(3, 0);
+            vTaskDelay(2000);
 
-    // digitalWrite(LCD_LEDA, HIGH);
-    // digitalWrite(MOTOR1, HIGH);
-    // digitalWrite(MOTOR2, HIGH);
-    // digitalWrite(TP_RST, HIGH);
-    // digitalWrite(LCD_DC, HIGH);
-    // digitalWrite(LCD_RST, HIGH);
-    // digitalWrite(KEY, HIGH);
-    ledcWrite(1, 200);
-    ledcWrite(2, 200);
-    ledcWrite(3, 200);
-    ledcWrite(4, 200);
-    ledcWrite(5, 200);
-    ledcWrite(6, 200);
-        vTaskDelay(2000);
-        
-    // digitalWrite(PIN_NUM_LED_R, LOW);
-    // digitalWrite(PIN_NUM_LED_G, LOW);
-    // digitalWrite(PIN_NUM_LED_B, LOW);
+        for (color = 0; color < 255; color++) 
+        { // Slew through the color spectrum
+            hueToRGB(color, brightness);  // call function to convert hue to RGB
 
-    // digitalWrite(LCD_LEDA, LOW);
-    // digitalWrite(MOTOR1, LOW);
-    // digitalWrite(MOTOR2, LOW);
-    // digitalWrite(TP_RST, LOW);
-    // digitalWrite(LCD_DC, LOW);
-    // digitalWrite(LCD_RST, LOW);
-    // digitalWrite(KEY, LOW);
-    ledcWrite(1, 0);
-    ledcWrite(2, 0);
-    ledcWrite(3, 0);
-    ledcWrite(4, 0);
-    ledcWrite(5, 0);
-    ledcWrite(6, 0);
-        vTaskDelay(2000);
+            // write the RGB values to the pins
+            ledcWrite(1, R); // write red component to channel 1, etc.
+            ledcWrite(2, G);   
+            ledcWrite(3, B);
 
-    for (color = 0; color < 255; color++) 
-    { // Slew through the color spectrum
-        hueToRGB(color, brightness);  // call function to convert hue to RGB
-
-        // write the RGB values to the pins
-        ledcWrite(1, R); // write red component to channel 1, etc.
-        ledcWrite(2, G);   
-        ledcWrite(3, B);
-        ledcWrite(4, B);
-        ledcWrite(5, B);
-        ledcWrite(6, B);
-
-        vTaskDelay(10); // full cycle of rgb over 256 colors takes 26 seconds
-    }
-
+            vTaskDelay(10); // full cycle of rgb over 256 colors takes 26 seconds
+        }
     }
 }

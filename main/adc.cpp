@@ -1,10 +1,11 @@
 #include "adc.h"
 
 
-#define PIN_NUM_BAT_ADC 12
+#define PIN_NUM_BAT_ADC 13
 
 void bat_adc_init(void)
 {
+    pinMode(PIN_NUM_BAT_ADC, INPUT);
     analogReadResolution(12);                   // Sets the sample bits and read resolution, default is 12-bit (0 - 4095), range is 9 - 12 bits
     analogSetWidth(12);                         // Sets the sample bits and read resolution, default is 12-bit (0 - 4095), range is 9 - 12 bits
     //  9-bit gives an ADC range of 0-511
@@ -22,7 +23,7 @@ void bat_adc_init(void)
     // ADC_11db provides an attenuation so that IN/OUT  = 1 / 3.6 an input of 3 volts is reduced to 0.833 volts before ADC measurement
 
     adcAttachPin(PIN_NUM_BAT_ADC);
-    // analogSetClockDiv(255);                     // 1338mS
+    analogSetClockDiv(255);                     // 1338mS
 }
 
 void task_bat_adc(void *pvParameters)
@@ -36,10 +37,9 @@ void task_bat_adc(void *pvParameters)
         while ( adcBusy(PIN_NUM_BAT_ADC));
         adc_value = analogRead(PIN_NUM_BAT_ADC);
 
+        Serial.printf("\r\n电池电压：%d", adc_value);
 
-        Serial.print(adc_value, DEC);
-
-        vTaskDelay(1000);
+        vTaskDelay(5000);
     }
  
 

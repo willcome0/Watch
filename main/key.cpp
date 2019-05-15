@@ -1,13 +1,18 @@
 #include "key.h"
+#include "ui.h"
 
+#define PIN_NUM_KEY  34
 #define PIN_NUM_BAT_CHAR  15
 #define PIN_NUM_BAT_STDBY 16
 
+
 static void key_init(void)
 {
+    digitalWrite(PIN_NUM_KEY, HIGH);
     digitalWrite(PIN_NUM_BAT_CHAR, HIGH);
     digitalWrite(PIN_NUM_BAT_STDBY, HIGH);
-
+    
+    pinMode(PIN_NUM_KEY, INPUT);
     pinMode(PIN_NUM_BAT_CHAR, INPUT);
     pinMode(PIN_NUM_BAT_STDBY, INPUT);
 }
@@ -18,17 +23,36 @@ void task_key(void *pvParameters)
     key_init();
     for (;;)
     {
+        vTaskDelay(50);
+        if (digitalRead(PIN_NUM_KEY) == LOW)
+        {
+            vTaskDelay(10);
+            if (digitalRead(PIN_NUM_KEY) == LOW)
+            {
+                g_main_ui_case++;
+                Serial.printf("按键按下");
+                while (digitalRead(PIN_NUM_KEY) == LOW);
+            } 
+        }
         if (digitalRead(PIN_NUM_BAT_CHAR) == LOW)
         {
             vTaskDelay(10);
             if (digitalRead(PIN_NUM_BAT_CHAR) == LOW)
-            Serial.print(1, DEC);
+            {
+                g_bat_charge_flag = 1;
+            }
         }
-        if (digitalRead(PIN_NUM_BAT_STDBY) == LOW)
+        else
         {
-            vTaskDelay(10);
-            if (digitalRead(PIN_NUM_BAT_STDBY) == LOW)
-            Serial.print(2, DEC);
+            g_bat_charge_flag = 0;
         }
+            
+
+        // if (digitalRead(PIN_NUM_BAT_STDBY) == LOW)
+        // {
+        //     vTaskDelay(10);
+        //     if (digitalRead(PIN_NUM_BAT_STDBY) == LOW)
+        //         Serial.printf("充满");
+        // }
     }
 }

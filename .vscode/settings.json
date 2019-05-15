@@ -3,6 +3,10 @@
         "xutility": "c",
         "initializer_list": "cpp",
         "iosfwd": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "list": "cpp",
+        "type_traits": "cpp",
+        "vector": "cpp",
+        "xhash": "cpp"
     }
 }

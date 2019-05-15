@@ -4,7 +4,7 @@
 
 SPIClass *g_hspi = NULL;
 
-#define PIN_NUM_MISO 34 // 原25
+#define PIN_NUM_MISO 35 // 原25
 #define PIN_NUM_MOSI 23 // 一致
 #define PIN_NUM_CLK 18
 // #define PIN_NUM_CS   22  // CS????
@@ -74,14 +74,16 @@ void lcd_init(void)
     digitalWrite(PIN_NUM_RST, HIGH);
     digitalWrite(PIN_NUM_DC, HIGH);
 
+    digitalWrite(PIN_NUM_RST, LOW);
+    vTaskDelay(200 / portTICK_RATE_MS);
+    digitalWrite(PIN_NUM_RST, HIGH);
+    vTaskDelay(200 / portTICK_RATE_MS);
+
     g_hspi = new SPIClass(HSPI);
-    g_hspi->begin(PIN_NUM_CLK, PIN_NUM_MISO, PIN_NUM_MOSI, 24);
+    g_hspi->begin(PIN_NUM_CLK, PIN_NUM_MISO, PIN_NUM_MOSI, -1);
     g_hspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE3));
 
-    digitalWrite(PIN_NUM_RST, LOW);
-    vTaskDelay(100 / portTICK_RATE_MS);
-    digitalWrite(PIN_NUM_RST, HIGH);
-    vTaskDelay(100 / portTICK_RATE_MS);
+
 
     {
         /* Sleep Out */
@@ -180,9 +182,7 @@ void lcd_init(void)
 
     lcd_address_set(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
 
-    lcd_clear(WHITE);
-
-    lcd_show_img_bin(30, 30, 32, 32, RED, LGRAYBLUE, heart, 1);
+    
 }
 
 void lcd_clear(uint16_t color)
@@ -332,7 +332,15 @@ void lcd_show_char(u16 x, u16 y, u16 fc, u16 bc, u8 chr, u8 size, u8 cover)
     uint8_t data;
     uint8_t RowNum = size;
 	uint8_t ColNum = size/2/8 + ((size/2)%8!=0?1:0);
-    chr = chr - ' ';
+    if (size>=80)
+    {
+        chr = chr - '0';
+    }
+    else
+    {
+        chr = chr - ' ';
+    }
+    
     lcd_address_set(x, y, x+size/2-1, y+size-1);
     for (uint8_t j=0; j<RowNum; j++)
 	{
@@ -352,6 +360,10 @@ void lcd_show_char(u16 x, u16 y, u16 fc, u16 bc, u8 chr, u8 size, u8 cover)
 					data = asc2_2412[chr][j*ColNum + i];
 					break;
 				
+                case 80:
+					data = asc2_8040[chr][j*ColNum + i];
+					break;
+
                 default:
                     return;
             }
@@ -423,7 +435,12 @@ void lcd_show_zh(u16 x, u16 y, u16 fc, u16 bc, char *str, u8 size, u8 cover)
     case 16:
         zh_num = ZH_FONT16_NUM;
         break;
-
+    case 24:
+        zh_num = ZH_FONT24_NUM;
+        break;
+    // case 36:
+    //     zh_num = ZH_FONT36_NUM;
+        break;
     default:
         return;
     }
@@ -436,7 +453,16 @@ void lcd_show_zh(u16 x, u16 y, u16 fc, u16 bc, char *str, u8 size, u8 cover)
             index[1] = ZH_FONT16[k].index[1];
             index[2] = ZH_FONT16[k].index[2];
             break;
-
+        case 24:
+            index[0] = ZH_FONT24[k].index[0];
+            index[1] = ZH_FONT24[k].index[1];
+            index[2] = ZH_FONT24[k].index[2];
+            break;
+        // case 36:
+        //     index[0] = ZH_FONT36[k].index[0];
+        //     index[1] = ZH_FONT36[k].index[1];
+        //     index[2] = ZH_FONT36[k].index[2];
+        //     break;
         default:
             return;
         }
@@ -453,6 +479,12 @@ void lcd_show_zh(u16 x, u16 y, u16 fc, u16 bc, char *str, u8 size, u8 cover)
                     case 16:
                         data = ZH_FONT16[k].msk[j * ColNum + i];
                         break;
+                    case 24:
+                        data = ZH_FONT24[k].msk[j * ColNum + i];
+                        break;
+                    // case 36:
+                    //     data = ZH_FONT36[k].msk[j * ColNum + i];
+                    //     break;
                     default:
                         return;
                     }
@@ -521,6 +553,7 @@ void lcd_show_img(u16 x, u16 y, u16 width, u16 height, const u8 *p)
     lcd_write_buf((uint8_t *)p, width * height * 2);
 }
 
+
 void lcd_show_img_bin(u16 x, u16 y, u16 width, u16 height, u16 fc, u16 bc, const u8 *img, u8 cover)
 {
     uint8_t RowNum = height; // 行
@@ -533,7 +566,6 @@ void lcd_show_img_bin(u16 x, u16 y, u16 width, u16 height, u16 fc, u16 bc, const
     {
         for (uint8_t i=0; i<ColNum; i++)
         {
-
             data = img[j*ColNum + i];
             for (uint8_t a=0; a<((i==ColNum-1)?((width)%8!=0?(width)%8:8):8); a++)
             {
@@ -554,4 +586,69 @@ void lcd_show_img_bin(u16 x, u16 y, u16 width, u16 height, u16 fc, u16 bc, const
             }
         }
     }
+}
+
+
+
+
+#include "task.h"
+
+void lcd_show_img_bat(uint8_t show_flag)
+{
+    if (show_flag)
+        lcd_show_img_bin(206, 1, 32, 18, WHITE, BLACK, img_bin_bat, 1),
+    else
+        lcd_show_img_bin(206, 1, 32, 18, BLACK, BLACK, img_bin_bat, 1);
+}
+
+void lcd_show_img_charge(uint8_t show_flag)
+{
+    if (show_flag)
+        lcd_show_img(186, 0, 15, 20, img_charge);
+    else
+        lcd_fill(186, 0, 186+15, 0+20, BLACK);
+}
+
+void ui_show_dial(void)
+{
+    char str[30] = {0};
+
+    sprintf(str, "%02d:%02d", g_date_time.hour, g_date_time.minute);
+    lcd_show_str(20, 55, WHITE, BLACK, str, 80, 1);
+
+    lcd_show_num(210, 125, WHITE, BLACK, g_date_time.sec, 2, 24, '0', 1);
+
+    sprintf(str, "20%02d/%02d/%02d  周%s", 
+                g_date_time.year, g_date_time.month, g_date_time.day, ZH_FONT24[g_date_time.week].index);
+    lcd_show_str(30, 152, WHITE, BLACK, str, 24, 1);
+}
+
+void ui_show_device(void)
+{
+    char str[30] = {0};
+
+    lcd_clear(RED);
+
+}
+
+void ui_show_game(void)
+{
+    char str[30] = {0};
+
+        lcd_clear(GREEN);
+}
+
+void ui_show_set(void)
+{
+    char str[30] = {0};
+
+        lcd_clear(BLUE);
+
+}
+
+void ui_show_help(void)
+{
+    char str[30] = {0};
+
+        lcd_clear(WHITE);
 }
