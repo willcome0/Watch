@@ -14,6 +14,7 @@ void rgb_set(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t bright_v
 
 void task_led(void *pvParameters);
 
+void set_motor(uint8_t on_off);
 
 #ifdef __cplusplus
 }

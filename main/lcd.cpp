@@ -596,7 +596,7 @@ void lcd_show_img_bin(u16 x, u16 y, u16 width, u16 height, u16 fc, u16 bc, const
 void lcd_show_img_bat(uint8_t show_flag)
 {
     if (show_flag)
-        lcd_show_img_bin(206, 1, 32, 18, WHITE, BLACK, img_bin_bat, 1),
+        lcd_show_img_bin(206, 1, 32, 18, WHITE, BLACK, img_bin_bat, 1);
     else
         lcd_show_img_bin(206, 1, 32, 18, BLACK, BLACK, img_bin_bat, 1);
 }
@@ -607,6 +607,37 @@ void lcd_show_img_charge(uint8_t show_flag)
         lcd_show_img(186, 0, 15, 20, img_charge);
     else
         lcd_fill(186, 0, 186+15, 0+20, BLACK);
+}
+
+void lcd_show_img_wifi(uint8_t show_flag)
+{
+    if (show_flag)
+        lcd_show_img(0, 0, 23, 20, img_wifi_on);
+    else
+    {
+        lcd_draw_line(0, 0, 0, 20, BLACK);
+        lcd_show_img(1, 0, 22, 20, img_wifi_off);
+    }    
+}
+
+void lcd_show_img_device(void)
+{
+    lcd_show_img_bin(56, 66, 128, 128, WHITE, BLACK, img_bin_device, 1);
+}
+
+void lcd_show_img_game(void)
+{
+    lcd_show_img_bin(56, 66, 128, 128, WHITE, BLACK, img_bin_game, 1);
+}
+
+void lcd_show_img_set(void)
+{
+    lcd_show_img_bin(56, 66, 128, 128, WHITE, BLACK, img_bin_set, 1);
+}
+
+void lcd_show_img_help(void)
+{
+    lcd_show_img_bin(56, 66, 128, 128, WHITE, BLACK, img_bin_help, 1);
 }
 
 void ui_show_dial(void)
@@ -627,7 +658,7 @@ void ui_show_device(void)
 {
     char str[30] = {0};
 
-    lcd_clear(RED);
+    lcd_show_img_device();
 
 }
 
@@ -635,14 +666,14 @@ void ui_show_game(void)
 {
     char str[30] = {0};
 
-        lcd_clear(GREEN);
+    lcd_show_img_game();
 }
 
 void ui_show_set(void)
 {
     char str[30] = {0};
 
-        lcd_clear(BLUE);
+    lcd_show_img_set();
 
 }
 
@@ -650,5 +681,5 @@ void ui_show_help(void)
 {
     char str[30] = {0};
 
-        lcd_clear(WHITE);
+    lcd_show_img_help();
 }

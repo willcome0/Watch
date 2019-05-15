@@ -68,6 +68,12 @@ void lcd_show_img_bin(u16 x, u16 y, u16 width, u16 height, u16 fc, u16 bc, const
 
 void lcd_show_img_bat(uint8_t show_flag);
 void lcd_show_img_charge(uint8_t show_flag);
+void lcd_show_img_wifi(uint8_t show_flag);
+void lcd_show_img_device(void);
+void lcd_show_img_game(void);
+void lcd_show_img_set(void);
+void lcd_show_img_help(void);
+
 
 void ui_show_dial(void);
 void ui_show_device(void);

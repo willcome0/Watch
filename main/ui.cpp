@@ -1,5 +1,7 @@
 #include "ui.h"
 #include "lcd.h"
+#include "key.h"
+#include "led.h"
 
 uint8_t g_main_ui_case = 0;
 uint8_t g_bat_charge_flag = 0;
@@ -26,6 +28,8 @@ void task_ui(void *pvParameters)
             lcd_show_img_charge(g_bat_charge_flag);
         }
         lcd_show_img_bat(g_bat_charge_flag);
+        lcd_show_img_wifi(g_bat_charge_flag);
+
         switch (g_main_ui_case)
         {
             case 0: // 表盘

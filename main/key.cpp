@@ -1,5 +1,6 @@
 #include "key.h"
 #include "ui.h"
+#include "led.h"
 
 #define PIN_NUM_KEY  34
 #define PIN_NUM_BAT_CHAR  15
@@ -26,13 +27,15 @@ void task_key(void *pvParameters)
         vTaskDelay(50);
         if (digitalRead(PIN_NUM_KEY) == LOW)
         {
+            set_motor(1);
             vTaskDelay(10);
             if (digitalRead(PIN_NUM_KEY) == LOW)
             {
                 g_main_ui_case++;
                 Serial.printf("按键按下");
                 while (digitalRead(PIN_NUM_KEY) == LOW);
-            } 
+            }
+            set_motor(0);
         }
         if (digitalRead(PIN_NUM_BAT_CHAR) == LOW)
         {

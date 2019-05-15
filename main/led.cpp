@@ -33,7 +33,6 @@ void led_init(void)
     ledcAttachPin(PIN_NUM_LED_R, 1);
     ledcAttachPin(PIN_NUM_LED_G, 2);
     ledcAttachPin(PIN_NUM_LED_B, 3);
-
     ledcAttachPin(LCD_LEDA, 4);
     ledcAttachPin(MOTOR1, 5);
     ledcAttachPin(MOTOR2, 6);
@@ -148,5 +147,19 @@ void task_led(void *pvParameters)
 
             vTaskDelay(10); // full cycle of rgb over 256 colors takes 26 seconds
         }
+    }
+}
+
+void set_motor(uint8_t on_off)
+{
+    if (on_off)
+    {
+        ledcWrite(5, 0);
+        ledcWrite(6, 200);
+    }
+    else
+    {
+        ledcWrite(5, 0);
+        ledcWrite(6, 0);
     }
 }
