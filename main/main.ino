@@ -49,6 +49,19 @@
 #include "task.h"
 #include "led.h"
 
+
+#include "led.h"
+#include "adc.h"
+#include "key.h"
+#include "ui.h"
+#include "ft6236.h"
+
+#if CONFIG_FREERTOS_UNICORE
+#define ARDUINO_RUNNING_CORE 0
+#else
+#define ARDUINO_RUNNING_CORE 1
+#endif
+
 char auth[] = "b914310a8ac1";
 // char ssid[] = "will的iPhone";
 // char pswd[] = "kangkang";
@@ -71,8 +84,9 @@ void rgb_led_callback(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t
 void setup()
 {
     Serial.begin(115200);
-
-    creat_task();
+iic_init();
+    ft6236_init();
+    // creat_task();
 
     // BLINKER_DEBUG.stream(Serial);
     // Blinker.begin("b914310a8ac1");
@@ -82,12 +96,50 @@ void setup()
     // g_rgb_button.attach(rgb_button_callback);
     // g_rgb_led.attach(rgb_led_callback);
 
+
+
+    xTaskCreate(
+        task_data_time,
+        "task_data_time",
+        1024,
+        NULL, 3,
+        NULL);
+
+    // xTaskCreatePinnedToCore(
+    //     task_key,
+    //     "task_key",
+    //     2048,
+    //     NULL, 3, // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+    //     NULL, ARDUINO_RUNNING_CORE);
+
+    xTaskCreate(
+        task_led,
+        "task_led",
+        1024,
+        NULL, 1,
+        NULL);
+
+    xTaskCreate(
+        task_ui,
+        "task_ui",
+        2048,
+        NULL, 1,
+        NULL);
+
+    xTaskCreate(
+        task_touch,
+        "task_touch",
+        2048,
+        NULL, 2,
+        NULL);
 }
 
 void loop()
 {
-
-    Blinker.run();
+        struct TouchLocation tp[10];
+        read_touch_location(tp, 1);
+        Serial.printf("\r\nxxxxx: %d  y: %d", tp[0].x, tp[0].y);
+    // Blinker.run();
     // rgb_set(RR, GG, BB, Bright);
 }
 

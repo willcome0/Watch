@@ -24,6 +24,7 @@ void task_key(void *pvParameters)
     key_init();
     for (;;)
     {
+        vTaskDelay(50);
         if (digitalRead(PIN_NUM_KEY) == LOW)
         {
             set_motor(1);
@@ -37,7 +38,7 @@ void task_key(void *pvParameters)
                 while (digitalRead(PIN_NUM_KEY) == LOW);
             }
         }
-        vTaskDelay(100);
+        vTaskDelay(50);
         set_motor(0);
 
         if (digitalRead(PIN_NUM_BAT_CHAR) == LOW)

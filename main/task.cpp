@@ -28,7 +28,6 @@ void creat_task(void)
     ft6236_init();
 
 
-
     xTaskCreatePinnedToCore(
         task_data_time,
         "task_data_time",
@@ -40,35 +39,35 @@ void creat_task(void)
         task_led,
         "task_led",
         1024,
-        NULL, 2,
+        NULL, 3,
         NULL, ARDUINO_RUNNING_CORE);
 
-    xTaskCreatePinnedToCore(
-        task_bat_adc,
-        "task_bat_adc",
-        2048,
-        NULL, 2, // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
-        NULL, ARDUINO_RUNNING_CORE);
+    // xTaskCreatePinnedToCore(
+    //     task_bat_adc,
+    //     "task_bat_adc",
+    //     2048,
+    //     NULL, 2, // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+    //     NULL, ARDUINO_RUNNING_CORE);
 
-    xTaskCreatePinnedToCore(
-        task_key,
-        "task_key",
-        2048,
-        NULL, configMAX_PRIORITIES - 2, // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
-        NULL, ARDUINO_RUNNING_CORE);
+    // xTaskCreatePinnedToCore(
+    //     task_key,
+    //     "task_key",
+    //     2048,
+    //     NULL, configMAX_PRIORITIES - 2, // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+    //     NULL, ARDUINO_RUNNING_CORE);
 
     xTaskCreatePinnedToCore(
         task_ui,
         "task_ui",
         2048,
-        NULL, 2,
+        NULL, 1,
         NULL, ARDUINO_RUNNING_CORE);
 
     xTaskCreatePinnedToCore(
         task_touch,
         "task_touch",
         2048,
-        NULL, configMAX_PRIORITIES - 3,
+        NULL, 2,
         NULL, ARDUINO_RUNNING_CORE);
 
     // xTaskCreatePinnedToCore(

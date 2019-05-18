@@ -21,6 +21,8 @@ struct Date_Time
 
 extern struct Date_Time g_date_time;
 
+
+void task_data_time(void *pvParameters);
 void creat_task(void);
 
 #ifdef __cplusplus

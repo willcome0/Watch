@@ -3,7 +3,7 @@
 
 #define PIN_NUM_SDA 21
 #define PIN_NUM_SCL 22
-#define IIC_FREQ 400000
+#define IIC_FREQ 200000
 
 #define FT6236_ADDR 0x38
 
@@ -20,26 +20,24 @@ void ft6236_init(void)
     write_touch_register(0, 0);       // device mode = Normal
     write_touch_register(0xA4, 0x00); // Interrupt polling mode
 
-    Wire.beginTransmission(0x68);
-    Wire.write(0x6B);
-    Wire.write(0);
-    Wire.endTransmission(true);
+    // Wire.beginTransmission(0x68);
+    // Wire.write(0x6B);
+    // Wire.write(0);
+    // Wire.endTransmission(true);
 }
 
 void task_touch(void *pvParameters)
 {
     (void)pvParameters;
-    // Wire.beginTransmission(MPU6050_addr);
-    // Wire.write(0x6B);
-    // Wire.write(0);
-    // Wire.endTransmission(true);
 
     for (;;)
     {
         vTaskDelay(50);
+
         struct TouchLocation tp[10];
         read_touch_location(tp, 1);
 
+        // // 6050??
         // Wire.beginTransmission(0x68);
         // Wire.write(0x3B);
         // Wire.endTransmission(true);
@@ -52,8 +50,8 @@ void task_touch(void *pvParameters)
         // GyroY = Wire.read() << 8 | Wire.read();
         // GyroZ = Wire.read() << 8 | Wire.read();
 
-        Serial.printf("\r\nx: %d  y: %d", tp[0].x, tp[0].y, Temp/ 340.00 + 36.53); 
-        // Serial.printf("\r\n温度：%f", Temp / 340.00 + 36.53);
+        Serial.printf("\r\nx: %d  y: %d", tp[0].x, tp[0].y); 
+        // Serial.printf("\r\temp: %f", Temp / 340.00 + 36.53);
         // Serial.printf("\r\nax:%d ay:%d az:%d", AccX, AccY, AccZ);
         // Serial.printf("\r\ngx:%d gy:%d gz:%d\r\n", GyroX, GyroY, GyroZ);
     }
@@ -141,7 +139,12 @@ uint8_t read_touch_location(struct TouchLocation *pLoc, uint8_t num)
         static uint8_t tbuf[40];
 
         if ((status & 0x0f) == 0)
+        {
+            pLoc[k].x = 0;
+            pLoc[k].y = 0;
             break; // no points detected
+        }
+            
 
         uint8_t hitPoints = status & 0x0f;
 
