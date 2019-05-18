@@ -24,7 +24,6 @@ void task_key(void *pvParameters)
     key_init();
     for (;;)
     {
-        vTaskDelay(50);
         if (digitalRead(PIN_NUM_KEY) == LOW)
         {
             set_motor(1);
@@ -33,10 +32,14 @@ void task_key(void *pvParameters)
             {
                 g_main_ui_case++;
                 Serial.printf("按键按下");
+                vTaskDelay(100);
+                set_motor(0);
                 while (digitalRead(PIN_NUM_KEY) == LOW);
             }
-            set_motor(0);
         }
+        vTaskDelay(100);
+        set_motor(0);
+
         if (digitalRead(PIN_NUM_BAT_CHAR) == LOW)
         {
             vTaskDelay(10);

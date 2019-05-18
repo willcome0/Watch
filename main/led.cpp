@@ -159,6 +159,12 @@ void set_motor(uint8_t on_off)
     }
     else
     {
+        // for (uint8_t i=0; i<11; i++)
+        // {
+        //     ledcWrite(5, 200-20*i);
+        //     ledcWrite(6, 200-20*i);
+        //     vTaskDelay(20);
+        // }
         ledcWrite(5, 0);
         ledcWrite(6, 0);
     }

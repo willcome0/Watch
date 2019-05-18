@@ -622,22 +622,26 @@ void lcd_show_img_wifi(uint8_t show_flag)
 
 void lcd_show_img_device(void)
 {
-    lcd_show_img_bin(56, 66, 128, 128, WHITE, BLACK, img_bin_device, 1);
+    lcd_show_img_bin(56, 46, 128, 128, WHITE, BLACK, img_bin_device, 1);
+    lcd_show_str(90, 200, WHITE, BLACK, "设 备", 24, 1);
 }
 
 void lcd_show_img_game(void)
 {
-    lcd_show_img_bin(56, 66, 128, 128, WHITE, BLACK, img_bin_game, 1);
+    lcd_show_img_bin(56, 46, 128, 128, WHITE, BLACK, img_bin_game, 1);
+    lcd_show_str(90, 200, WHITE, BLACK, "游 戏", 24, 1);
 }
 
 void lcd_show_img_set(void)
 {
-    lcd_show_img_bin(56, 66, 128, 128, WHITE, BLACK, img_bin_set, 1);
+    lcd_show_img_bin(56, 46, 128, 128, WHITE, BLACK, img_bin_set, 1);
+    lcd_show_str(90, 200, WHITE, BLACK, "设 置", 24, 1);
 }
 
 void lcd_show_img_help(void)
 {
-    lcd_show_img_bin(56, 66, 128, 128, WHITE, BLACK, img_bin_help, 1);
+    lcd_show_img_bin(56, 46, 128, 128, WHITE, BLACK, img_bin_help, 1);
+    lcd_show_str(90, 200, WHITE, BLACK, "帮 助", 24, 1);
 }
 
 void ui_show_dial(void)

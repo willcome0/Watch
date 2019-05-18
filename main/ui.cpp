@@ -13,21 +13,23 @@ void task_ui(void *pvParameters)
     lcd_clear(BLACK);
     static uint8_t old_main_ui_case = 99;
     static uint8_t old_bat_charge_flag = 99;
-
+    static uint8_t reflash_flag = 0;
     for (;;)
     {
         g_main_ui_case = g_main_ui_case%5;
         if (old_main_ui_case != g_main_ui_case)
         {
             old_main_ui_case = g_main_ui_case;
+            reflash_flag = 1;
             lcd_clear(BLACK);
         }
-        if (old_bat_charge_flag != g_bat_charge_flag)
+        if (old_bat_charge_flag != g_bat_charge_flag || reflash_flag)
         {
+            reflash_flag = 0;
             old_bat_charge_flag = g_bat_charge_flag;
             lcd_show_img_charge(g_bat_charge_flag);
         }
-        lcd_show_img_bat(g_bat_charge_flag);
+        lcd_show_img_bat(1);
         lcd_show_img_wifi(g_bat_charge_flag);
 
         switch (g_main_ui_case)
