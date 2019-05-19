@@ -86,10 +86,17 @@ void rgb_led_callback(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t
 void setup()
 {
     Serial.begin(115200);
+
+    BLINKER_DEBUG.stream(Serial);
+    Blinker.begin("b914310a8ac1", ssid, pswd);
+    Blinker.attachData(blinker_callback);
+    Blinker.attachHeartbeat(heartbeat);
+    Blinker.setTimezone(8.0);
+
     ticker_datatime.attach_ms(1000, datatime_count);
     ticker_iic.attach_ms(30, iic_get);
 
-    Wire.begin(21, 22, 200000);
+    Wire.begin(21, 22, 400000);
     write_touch_register(0, 0);       // device mode = Normal
     write_touch_register(0xA4, 0x00); // Interrupt polling mode
 
@@ -106,11 +113,7 @@ void setup()
 
     // creat_task();
 
-    BLINKER_DEBUG.stream(Serial);
-    Blinker.begin("b914310a8ac1", ssid, pswd);
-    Blinker.attachData(blinker_callback);
-    Blinker.attachHeartbeat(heartbeat);
-    Blinker.setTimezone(8.0);
+
     
 
     // g_rgb_device.attach(rgb_device_callback);
@@ -127,12 +130,15 @@ static uint16_t key_pressed = 0;
 void loop()
 {
     Blinker.run();
+
     static uint8_t net_time_flag = 0;
-    if (Blinker.status() == WL_CONNECTED && net_time_flag == 0)
+     if (g_date_time.all_sec > 10 && net_time_flag == 0)
     {
         net_time_flag = 1;
         heartbeat();
     }
+    
+
     struct TouchLocation tp[20];
     if (leda_flag && iic_get_flag)
     {
@@ -507,9 +513,10 @@ void loop()
                 break;
 
             case 13: // 设置界面一
-                lcd_show_str(90, 0, WHITE, BLACK, "设 置", 24, 1);
-                lcd_show_img_wait();
-                lcd_show_str(78, 200, WHITE, BLACK, "设 置 一", 24, 1);
+                lcd_show_img_bright(40, 80);
+                lcd_show_str( 12, 140, WHITE, BLACK, "屏幕亮度", 24, 1);
+                lcd_show_img_lock(148, 80);
+                lcd_show_str(132, 140, WHITE, BLACK, "自动息屏", 24, 1);
                 break;
 
             case 23: // 设置界面二
