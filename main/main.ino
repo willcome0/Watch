@@ -590,14 +590,14 @@ void loop()
     // rgb_set(RR, GG, BB, Bright);
 }
 
-// void blinker_callback(const String & data)
-// {
-//     // 不触发其他回调时也会来这
-//     BLINKER_LOG("设备回调", data);
+void blinker_callback(const String & data)
+{
+    // 不触发其他回调时也会来这
+    BLINKER_LOG("设备回调", data);
 
-//     // must print Json data
-//     g_rgb_device.print("{\"hello\":\"bridge\"}");
-// }
+    // must print Json data
+    g_rgb_device.print("{\"hello\":\"bridge\"}");
+}
 
 // void rgb_device_callback(const String & data)
 // {
