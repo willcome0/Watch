@@ -8,6 +8,8 @@
         "type_traits": "cpp",
         "vector": "cpp",
         "xhash": "cpp",
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "algorithm": "cpp",
+        "limits": "cpp"
     }
 }

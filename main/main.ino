@@ -1,5 +1,4 @@
 #define BLINKER_WIFI
-#define BLINKER_ESP_TASK
 // #define BLINKER_ESP_SMARTCONFIG
 
 #include <Blinker.h>
@@ -64,7 +63,8 @@ void iic_get(void)
 #endif
 
 char auth[] = "b914310a8ac1";
-char ssid[] = "will的iPhone";
+// char ssid[] = "will的iPhone";
+char ssid[] = "kangkang";
 char pswd[] = "kangkang";
 
 uint8_t RR, GG, BB, Bright;
@@ -76,6 +76,7 @@ BlinkerButton g_rgb_button("rgb_button");
 BlinkerRGB g_rgb_led("rgb_led");
 
 void blinker_callback(const String &data);
+void heartbeat(void);
 
 void rgb_device_callback(const String &data);
 void rgb_button_callback(const String &state);
@@ -108,8 +109,10 @@ void setup()
     BLINKER_DEBUG.stream(Serial);
     Blinker.begin("b914310a8ac1", ssid, pswd);
     Blinker.attachData(blinker_callback);
+    Blinker.attachHeartbeat(heartbeat);
+    Blinker.setTimezone(8.0);
+    
 
-    BLINKER_TAST_INIT();
     // g_rgb_device.attach(rgb_device_callback);
     // g_rgb_button.attach(rgb_button_callback);
     // g_rgb_led.attach(rgb_led_callback);
@@ -123,6 +126,13 @@ static uint32_t first_static_time = 0;
 static uint16_t key_pressed = 0;
 void loop()
 {
+    Blinker.run();
+    static uint8_t net_time_flag = 0;
+    if (Blinker.status() == WL_CONNECTED && net_time_flag == 0)
+    {
+        net_time_flag = 1;
+        heartbeat();
+    }
     struct TouchLocation tp[20];
     if (leda_flag && iic_get_flag)
     {
@@ -597,6 +607,31 @@ void blinker_callback(const String & data)
 
     // must print Json data
     g_rgb_device.print("{\"hello\":\"bridge\"}");
+}
+
+void heartbeat(void)
+{
+
+    // 设置网络时间
+    
+    int8_t sec = Blinker.second();
+    int8_t minute = Blinker.minute();
+    int8_t hour = Blinker.hour();
+    int8_t wday = Blinker.wday();
+    int8_t mday = Blinker.mday();
+    int8_t month = Blinker.month();
+    int16_t year = Blinker.year();
+    if (sec != -1 && minute != -1 && hour != -1 && wday != -1 && mday != -1 && month != -1 && year != -1)
+    {
+        g_date_time.year = year-2000;
+        g_date_time.month = month;
+        g_date_time.day = mday;
+        g_date_time.hour = hour;
+        g_date_time.minute = minute;
+        g_date_time.sec = sec;
+        g_date_time.week = wday;
+    }
+
 }
 
 // void rgb_device_callback(const String & data)

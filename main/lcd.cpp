@@ -672,7 +672,7 @@ void ui_show_dial(void)
     lcd_show_num(210, 125, WHITE, BLACK, g_date_time.sec, 2, 24, '0', 1);
 
     sprintf(str, "20%02d/%02d/%02d  周%s", 
-                g_date_time.year, g_date_time.month, g_date_time.day, ZH_FONT24[g_date_time.week].index);
+                g_date_time.year, g_date_time.month, g_date_time.day, ZH_FONT24[g_date_time.week+1].index);
     lcd_show_str(30, 152, WHITE, BLACK, str, 24, 1);
 }
 
