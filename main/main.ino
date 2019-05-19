@@ -397,7 +397,7 @@ void loop()
             }
             else
             {
-                if (g_date_time.all_sec - first_static_time > 10)
+                if (g_date_time.all_sec - first_static_time > 3)
                 {
                     ledcWrite(4, 0);
                     leda_flag = 0;
@@ -523,8 +523,6 @@ void loop()
         }
     }
 
-
-
     // 按键及电机停止部分
     set_motor(0);
     if (digitalRead(34) == LOW)
@@ -550,10 +548,18 @@ void loop()
                 Serial.printf("按键按下");
             }
 
-            if (key_pressed > 200)
+            if (key_pressed > 50) // 长按关机
             {
                 ledcWrite(4, 255);
                 leda_flag = 1;
+                lcd_clear(BLACK);
+                lcd_show_img_poweroff();
+
+                do
+                {
+                    read_touch_location(tp, 1);
+                }
+                while (tp[0].x&&tp[0].y);
             }
             key_pressed++;
         }
@@ -562,6 +568,7 @@ void loop()
     }
     else
         key_pressed = 0;
+
 
     // Blinker.run();
     // rgb_set(RR, GG, BB, Bright);

@@ -74,6 +74,7 @@ void lcd_show_img_game(void);
 void lcd_show_img_set(void);
 void lcd_show_img_help(void);
 void lcd_show_img_wait(void);
+void lcd_show_img_poweroff(void);
 void lcd_show_img_device1(uint16_t x, uint16_t y);
 void lcd_show_img_device2(uint16_t x, uint16_t y);
 
