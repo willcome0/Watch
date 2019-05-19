@@ -512,7 +512,7 @@ void loop()
                 ui_show_set();
                 break;
 
-            case 4: // 帮助
+            case 4: // 关于
                 ui_show_help();
                 break;
 
@@ -543,13 +543,14 @@ void loop()
                 break;
 
             case 13: // 设置界面一
+                lcd_show_str(90, 0, WHITE, BLACK, "设 置", 24, 1);
                 lcd_show_img_bright(40, 80);
                 lcd_show_str( 12, 140, WHITE, BLACK, "屏幕亮度", 24, 1);
                 lcd_show_img_lock(148, 80);
                 lcd_show_str(132, 140, WHITE, BLACK, "自动息屏", 24, 1);
                 break;
 
-            case 23: // 设置界面二
+            case 23: // 设置界面二（敬请期待）
                 lcd_show_str(90, 0, WHITE, BLACK, "设 置", 24, 1);
                 lcd_show_img_wait();
                 lcd_show_str(78, 200, WHITE, BLACK, "设 置 二", 24, 1);
@@ -557,8 +558,10 @@ void loop()
 
             case 14: // 关于界面一
                 lcd_show_str(90, 0, WHITE, BLACK, "关 于", 24, 1);
-                lcd_show_img_wait();
-                lcd_show_str(78, 200, WHITE, BLACK, "关 于 一", 24, 1);
+                lcd_show_img_school_name();
+                lcd_show_str(78, 130, WHITE, BLACK, "智能与电子工程学院", 24, 1);
+                lcd_show_str(78, 160, WHITE, BLACK, "电子15003", 24, 1);
+                lcd_show_str(78, 190, WHITE, BLACK, "康滢", 24, 1);
                 break;
 
             case 24: // 关于界面二（敬请期待）

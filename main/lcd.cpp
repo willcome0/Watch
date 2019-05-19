@@ -675,6 +675,10 @@ void lcd_show_img_poweron(void)
     lcd_show_img_bin(56, 36, 128, 128, WHITE, BLACK, img_bin_poweron, 1);
 }
 
+void lcd_show_img_school_name(void)
+{
+    lcd_show_img_bin(0, 36, 240, 46, WHITE, BLACK, img_bin_school_name, 1);
+}
 
 void ui_show_dial(void)
 {
@@ -719,7 +723,7 @@ void ui_show_help(void)
     char str[30] = {0};
 
     lcd_show_img_help();
-    lcd_show_str(90, 200, WHITE, BLACK, "帮 助", 24, 1);
+    lcd_show_str(90, 200, WHITE, BLACK, "关 于", 24, 1);
 }
 
 void ui_show_device_con(void)
