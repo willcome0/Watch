@@ -43,6 +43,11 @@ void led_init(void)
     ledcSetup(4, LED_FREQ, LED_BIT_NUM);
     ledcSetup(5, LED_FREQ, LED_BIT_NUM);
     ledcSetup(6, LED_FREQ, LED_BIT_NUM);
+
+    ledcWrite(1, 255);
+    ledcWrite(2, 255);
+    ledcWrite(3, 255);
+    ledcWrite(4, 255);
 }
 
 void rgb_set(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t bright_value)

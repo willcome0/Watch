@@ -7,7 +7,7 @@
 #define PIN_NUM_BAT_STDBY 16
 
 
-static void key_init(void)
+void key_init(void)
 {
     digitalWrite(PIN_NUM_KEY, HIGH);
     digitalWrite(PIN_NUM_BAT_CHAR, HIGH);

@@ -7,6 +7,7 @@
         "list": "cpp",
         "type_traits": "cpp",
         "vector": "cpp",
-        "xhash": "cpp"
+        "xhash": "cpp",
+        "cstdlib": "cpp"
     }
 }

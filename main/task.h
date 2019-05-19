@@ -10,6 +10,7 @@
 
 struct Date_Time
 {
+    uint32_t all_sec;
     uint8_t year;
     uint8_t month;
     uint8_t day;

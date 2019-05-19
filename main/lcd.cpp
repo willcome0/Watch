@@ -623,26 +623,39 @@ void lcd_show_img_wifi(uint8_t show_flag)
 void lcd_show_img_device(void)
 {
     lcd_show_img_bin(56, 46, 128, 128, WHITE, BLACK, img_bin_device, 1);
-    lcd_show_str(90, 200, WHITE, BLACK, "设 备", 24, 1);
 }
 
 void lcd_show_img_game(void)
 {
     lcd_show_img_bin(56, 46, 128, 128, WHITE, BLACK, img_bin_game, 1);
-    lcd_show_str(90, 200, WHITE, BLACK, "游 戏", 24, 1);
 }
 
 void lcd_show_img_set(void)
 {
     lcd_show_img_bin(56, 46, 128, 128, WHITE, BLACK, img_bin_set, 1);
-    lcd_show_str(90, 200, WHITE, BLACK, "设 置", 24, 1);
 }
 
 void lcd_show_img_help(void)
 {
     lcd_show_img_bin(56, 46, 128, 128, WHITE, BLACK, img_bin_help, 1);
-    lcd_show_str(90, 200, WHITE, BLACK, "帮 助", 24, 1);
 }
+
+void lcd_show_img_wait(void)
+{
+    lcd_show_img_bin(56, 46, 128, 128, WHITE, BLACK, img_bin_wait, 1);
+}
+
+void lcd_show_img_device1(uint16_t x, uint16_t y)
+{
+    lcd_show_img_bin(x, y, 40, 48, WHITE, BLACK, img_bin_device1, 1);
+}
+
+void lcd_show_img_device2(uint16_t x, uint16_t y)
+{
+    lcd_show_img_bin(x, y, 40, 48, WHITE, BLACK, img_bin_device2, 1);
+}
+
+
 
 void ui_show_dial(void)
 {
@@ -663,7 +676,7 @@ void ui_show_device(void)
     char str[30] = {0};
 
     lcd_show_img_device();
-
+    lcd_show_str(90, 200, WHITE, BLACK, "设 备", 24, 1);
 }
 
 void ui_show_game(void)
@@ -671,6 +684,7 @@ void ui_show_game(void)
     char str[30] = {0};
 
     lcd_show_img_game();
+    lcd_show_str(90, 200, WHITE, BLACK, "游 戏", 24, 1);
 }
 
 void ui_show_set(void)
@@ -678,7 +692,7 @@ void ui_show_set(void)
     char str[30] = {0};
 
     lcd_show_img_set();
-
+    lcd_show_str(90, 200, WHITE, BLACK, "设 置", 24, 1);
 }
 
 void ui_show_help(void)
@@ -686,4 +700,14 @@ void ui_show_help(void)
     char str[30] = {0};
 
     lcd_show_img_help();
+    lcd_show_str(90, 200, WHITE, BLACK, "帮 助", 24, 1);
+}
+
+void ui_show_device_con(void)
+{
+    char str[30] = {0};
+    lcd_show_img_device1(40, 80);
+    lcd_show_str( 12, 140, WHITE, BLACK, "氛 围 灯", 24, 1);
+    lcd_show_img_device2(148, 80);
+    lcd_show_str(132, 140, WHITE, BLACK, "智能插排", 24, 1);
 }

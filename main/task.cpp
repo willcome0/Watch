@@ -78,7 +78,7 @@ void creat_task(void)
     //     NULL, ARDUINO_RUNNING_CORE);
 }
 
-struct Date_Time g_date_time = {19, 5, 16, 14, 01, 02, 4};
+struct Date_Time g_date_time = {0, 19, 5, 16, 14, 01, 02, 4};
 
 void task_data_time(void *pvParameters)
 {
@@ -86,7 +86,7 @@ void task_data_time(void *pvParameters)
 
     for (;;)
     {
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        // vTaskDelay(1000 / portTICK_PERIOD_MS);
         if (++g_date_time.sec == 60) // 秒
         {
             g_date_time.sec = 0;

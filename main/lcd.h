@@ -73,13 +73,16 @@ void lcd_show_img_device(void);
 void lcd_show_img_game(void);
 void lcd_show_img_set(void);
 void lcd_show_img_help(void);
-
+void lcd_show_img_wait(void);
+void lcd_show_img_device1(uint16_t x, uint16_t y);
+void lcd_show_img_device2(uint16_t x, uint16_t y);
 
 void ui_show_dial(void);
 void ui_show_device(void);
 void ui_show_game(void);
 void ui_show_set(void);
 void ui_show_help(void);
+void ui_show_device_con(void);
 
 #ifdef __cplusplus
 }

@@ -7,8 +7,8 @@
 
 #define FT6236_ADDR 0x38
 
-const int MPU6050_addr = 0x68;
-int16_t AccX, AccY, AccZ, Temp, GyroX, GyroY, GyroZ;
+// const int MPU6050_addr = 0x68;
+// int16_t AccX, AccY, AccZ, Temp, GyroX, GyroY, GyroZ;
 
 void iic_init(void)
 {

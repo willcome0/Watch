@@ -8,7 +8,7 @@
  extern "C" {
 #endif
 
-
+void key_init(void);
 void task_key(void *pvParameters);
 
 
