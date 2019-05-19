@@ -1,5 +1,6 @@
 #define BLINKER_WIFI
-#define BLINKER_ESP_SMARTCONFIG
+#define BLINKER_ESP_TASK
+// #define BLINKER_ESP_SMARTCONFIG
 
 #include <Blinker.h>
 #include <string.h>
@@ -63,8 +64,8 @@ void iic_get(void)
 #endif
 
 char auth[] = "b914310a8ac1";
-// char ssid[] = "will的iPhone";
-// char pswd[] = "kangkang";
+char ssid[] = "will的iPhone";
+char pswd[] = "kangkang";
 
 uint8_t RR, GG, BB, Bright;
 uint8_t RR_Old, GG_Old, BB_Old;
@@ -104,10 +105,11 @@ void setup()
 
     // creat_task();
 
-    // BLINKER_DEBUG.stream(Serial);
-    // Blinker.begin("b914310a8ac1");
-    // Blinker.attachData(blinker_callback);
+    BLINKER_DEBUG.stream(Serial);
+    Blinker.begin("b914310a8ac1", ssid, pswd);
+    Blinker.attachData(blinker_callback);
 
+    BLINKER_TAST_INIT();
     // g_rgb_device.attach(rgb_device_callback);
     // g_rgb_button.attach(rgb_button_callback);
     // g_rgb_led.attach(rgb_led_callback);
@@ -555,11 +557,25 @@ void loop()
                 lcd_clear(BLACK);
                 lcd_show_img_poweroff();
 
-                do
+                while (1)
                 {
                     read_touch_location(tp, 1);
+                    if (tp[0].x == 120 && tp[0].y == 320)
+                    {
+                        set_motor(1);
+                        delay(50);
+                        set_motor(0);
+                        // 关机操作
+                    }
+                    else if (tp[0].x != 0 && tp[0].y != 0)
+                    { // 取消关机操作
+                        set_motor(1);
+                        delay(50);
+                        set_motor(0);
+                        key_pressed = 0;
+                        reflash_flag = 1;
+                    }
                 }
-                while (tp[0].x&&tp[0].y);
             }
             key_pressed++;
         }

@@ -645,6 +645,11 @@ void lcd_show_img_wait(void)
     lcd_show_img_bin(56, 46, 128, 128, WHITE, BLACK, img_bin_wait, 1);
 }
 
+void lcd_show_img_poweroff(void)
+{
+    lcd_show_img_bin(56, 36, 128, 128, WHITE, BLACK, img_bin_poweroff, 1);
+}
+
 void lcd_show_img_device1(uint16_t x, uint16_t y)
 {
     lcd_show_img_bin(x, y, 40, 48, WHITE, BLACK, img_bin_device1, 1);
