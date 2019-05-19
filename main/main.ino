@@ -87,6 +87,12 @@ void setup()
 {
     Serial.begin(115200);
 
+    led_init();
+    lcd_init();
+    lcd_clear(BLACK);
+    lcd_show_img_poweron();
+    lcd_show_str(66, 200, WHITE, BLACK, "正在开机...", 24, 1);
+
     BLINKER_DEBUG.stream(Serial);
     Blinker.begin("b914310a8ac1", ssid, pswd);
     Blinker.attachData(blinker_callback);
@@ -105,16 +111,10 @@ void setup()
     Wire.write(0);
     Wire.endTransmission(true);
 
-    led_init();
-    lcd_init();
-    lcd_clear(BLACK);
 
     key_init();
 
     // creat_task();
-
-
-    
 
     // g_rgb_device.attach(rgb_device_callback);
     // g_rgb_button.attach(rgb_button_callback);
@@ -127,17 +127,37 @@ static int16_t leda_flag = 1;
 static uint32_t first_static_time = 0;
 
 static uint16_t key_pressed = 0;
+static uint8_t net_time_flag = 0;
 void loop()
 {
-    Blinker.run();
 
-    static uint8_t net_time_flag = 0;
-     if (g_date_time.all_sec > 10 && net_time_flag == 0)
+    do
     {
-        net_time_flag = 1;
-        heartbeat();
-    }
-    
+        Blinker.run();
+
+        if (g_date_time.all_sec > 10 && net_time_flag == 0)
+        {
+            int8_t sec = Blinker.second();
+            int8_t minute = Blinker.minute();
+            int8_t hour = Blinker.hour();
+            int8_t wday = Blinker.wday();
+            int8_t mday = Blinker.mday();
+            int8_t month = Blinker.month();
+            int16_t year = Blinker.year();
+            if (sec != -1 && minute != -1 && hour != -1 && wday != -1 && mday != -1 && month != -1 && year != -1)
+            {
+                net_time_flag = 1; // 网络时间配置成功
+                g_date_time.year = year-2000;
+                g_date_time.month = month;
+                g_date_time.day = mday;
+                g_date_time.hour = hour;
+                g_date_time.minute = minute;
+                g_date_time.sec = sec;
+                g_date_time.week = wday;
+            }
+        }
+    }while(g_date_time.all_sec < 20 && net_time_flag == 0);
+
 
     struct TouchLocation tp[20];
     if (leda_flag && iic_get_flag)
@@ -618,7 +638,6 @@ void blinker_callback(const String & data)
 
 void heartbeat(void)
 {
-
     // 设置网络时间
     
     int8_t sec = Blinker.second();

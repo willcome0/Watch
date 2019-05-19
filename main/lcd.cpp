@@ -662,13 +662,19 @@ void lcd_show_img_device2(uint16_t x, uint16_t y)
 
 void lcd_show_img_bright(uint16_t x, uint16_t y)
 {
-    lcd_show_img_bin(x, y, 40, 48, WHITE, BLACK, img_bin_bright, 1);
+    lcd_show_img_bin(x, y, 48, 48, WHITE, BLACK, img_bin_bright, 1);
 }
 
 void lcd_show_img_lock(uint16_t x, uint16_t y)
 {
-    lcd_show_img_bin(x, y, 40, 48, WHITE, BLACK, img_bin_lock, 1);
+    lcd_show_img_bin(x, y, 48, 48, WHITE, BLACK, img_bin_lock, 1);
 }
+
+void lcd_show_img_poweron(void)
+{
+    lcd_show_img_bin(56, 36, 128, 128, WHITE, BLACK, img_bin_poweron, 1);
+}
+
 
 void ui_show_dial(void)
 {

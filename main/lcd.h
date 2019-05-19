@@ -79,6 +79,7 @@ void lcd_show_img_device1(uint16_t x, uint16_t y);
 void lcd_show_img_device2(uint16_t x, uint16_t y);
 void lcd_show_img_bright(uint16_t x, uint16_t y);
 void lcd_show_img_lock(uint16_t x, uint16_t y);
+void lcd_show_img_poweron(void);
 
 void ui_show_dial(void);
 void ui_show_device(void);
