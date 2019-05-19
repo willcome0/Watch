@@ -18,6 +18,7 @@ struct Date_Time
     uint8_t minute;
     uint8_t sec;
     uint8_t week;
+    uint8_t change_flag;
 };
 
 extern struct Date_Time g_date_time;

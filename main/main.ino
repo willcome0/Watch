@@ -16,9 +16,11 @@
 
 #include <Ticker.h>
 Ticker ticker_datatime;
+Ticker ticker_iic;
+
 void datatime_count(void)
 {
-    change_flag = 1;
+    g_date_time.change_flag = 1;
     g_date_time.all_sec++;
     if (++g_date_time.sec == 60) // 秒
     {
@@ -45,6 +47,14 @@ void datatime_count(void)
     //                 g_date_time.year, g_date_time.month, g_date_time.day,
     //                 g_date_time.hour, g_date_time.minute, g_date_time.sec);
 }
+
+volatile uint8_t iic_get_flag = 0;
+void iic_get(void)
+{
+    if (iic_get_flag==0)
+        iic_get_flag = 1;
+}
+
 
 #if CONFIG_FREERTOS_UNICORE
 #define ARDUINO_RUNNING_CORE 0
@@ -75,6 +85,7 @@ void setup()
 {
     Serial.begin(115200);
     ticker_datatime.attach_ms(1000, datatime_count);
+    ticker_iic.attach_ms(30, iic_get);
 
     Wire.begin(21, 22, 200000);
     write_touch_register(0, 0);       // device mode = Normal
@@ -110,109 +121,178 @@ static uint32_t first_static_time = 0;
 static uint16_t key_pressed = 0;
 void loop()
 {
-    struct TouchLocation tp[6];
-    if (leda_flag == 1)
+    struct TouchLocation tp[20];
+    if (leda_flag && iic_get_flag)
     {
+        iic_get_flag = 0;
         first_static_time = 0;
-        tp[5] = tp[4];
-        tp[4] = tp[3];
-        tp[3] = tp[2];
-        tp[2] = tp[1];
-        tp[1] = tp[0];
+
+        for (uint8_t i=1; i<20; i++)
+        {
+            tp[20-i] = tp[19-i];
+        }
         read_touch_location(tp, 1);
+        // tp[5] = tp[4];
+        // tp[4] = tp[3];
+        // tp[3] = tp[2];
+        // tp[2] = tp[1];
+        // tp[1] = tp[0];
+        // read_touch_location(tp, 1);
 
          
         // 向上划，下一个菜单
-        if (60 < tp[0].x && tp[0].x < 180 && 80 > tp[0].y &&
+        if (60 < tp[0].x && tp[0].x < 180 && tp[0].y < 60 &&
             tp[0].x != tp[1].x && tp[0].y != tp[1].y)
         {
-            if ((60 < tp[2].x && tp[2].x < 180 && 60 < tp[2].y && tp[2].y < 180 &&
-                tp[3].x == 0 && tp[3].y == 0) ||
-                (60 < tp[3].x && tp[3].x < 180 && 60 < tp[3].y && tp[3].y < 180 &&
-                tp[4].x == 0 && tp[4].y == 0) ||
-                (60 < tp[4].x && tp[4].x < 180 && 60 < tp[4].y && tp[4].y < 180 &&
-                tp[5].x == 0 && tp[5].y == 0))
+            for (uint8_t i=0; i<10; i++)
             {
-                set_motor(1);
-                if (g_main_ui_case < 10)// 主菜单才能上下
-                    g_main_ui_case++;
-                memset(tp, 0, sizeof(tp));
+                if (60 < tp[1+i].x && tp[1+i].x < 180 && 60 < tp[1+i].y && tp[1+i].y < 180 &&
+                    tp[2+i].x == 0 && tp[2+i].y == 0)
+                {
+                    set_motor(1);
+                    if (g_main_ui_case < 10)// 主菜单才能上下
+                        g_main_ui_case++;
+                    memset(tp, 0, sizeof(tp));
+                    break;
+                }
             }
+            // if ((60 < tp[2].x && tp[2].x < 180 && 60 < tp[2].y && tp[2].y < 180 &&
+            //     tp[3].x == 0 && tp[3].y == 0) ||
+            //     (60 < tp[3].x && tp[3].x < 180 && 60 < tp[3].y && tp[3].y < 180 &&
+            //     tp[4].x == 0 && tp[4].y == 0) ||
+            //     (60 < tp[4].x && tp[4].x < 180 && 60 < tp[4].y && tp[4].y < 180 &&
+            //     tp[5].x == 0 && tp[5].y == 0))
+            // {
+            //     set_motor(1);
+            //     if (g_main_ui_case < 10)// 主菜单才能上下
+            //         g_main_ui_case++;
+            //     memset(tp, 0, sizeof(tp));
+            // }
         }
 
         // 向下划，上一个菜单
-        if (60 < tp[0].x && tp[0].x < 180 && 160 < tp[0].y &&
+        if (60 < tp[0].x && tp[0].x < 180 && tp[0].y > 180 &&
             tp[0].x != tp[1].x && tp[0].y != tp[1].y)
         {
-            if ((60 < tp[2].x && tp[2].x < 180 && 60 < tp[2].y && tp[2].y < 180 &&
-                tp[3].x == 0 && tp[3].y == 0) ||
-                (60 < tp[3].x && tp[3].x < 180 && 60 < tp[3].y && tp[3].y < 180 &&
-                tp[4].x == 0 && tp[4].y == 0) ||
-                (60 < tp[4].x && tp[4].x < 180 && 60 < tp[4].y && tp[4].y < 180 &&
-                tp[5].x == 0 && tp[5].y == 0))
+            for (uint8_t i=0; i<10; i++)
             {
-                set_motor(1);
-                if (g_main_ui_case < 10)// 主菜单才能上下
-                    g_main_ui_case--;
-                memset(tp, 0, sizeof(tp));
+                if (60 < tp[1+i].x && tp[1+i].x < 180 && 60 < tp[1+i].y && tp[1+i].y < 180 &&
+                    tp[2+i].x == 0 && tp[2+i].y == 0)
+                {
+                    set_motor(1);
+                    if (g_main_ui_case < 10)// 主菜单才能上下
+                        g_main_ui_case--;
+                    memset(tp, 0, sizeof(tp));
+                    break;
+                }
             }
+            // if ((60 < tp[2].x && tp[2].x < 180 && 60 < tp[2].y && tp[2].y < 180 &&
+            //     tp[3].x == 0 && tp[3].y == 0) ||
+            //     (60 < tp[3].x && tp[3].x < 180 && 60 < tp[3].y && tp[3].y < 180 &&
+            //     tp[4].x == 0 && tp[4].y == 0) ||
+            //     (60 < tp[4].x && tp[4].x < 180 && 60 < tp[4].y && tp[4].y < 180 &&
+            //     tp[5].x == 0 && tp[5].y == 0))
+            // {
+            //     set_motor(1);
+            //     if (g_main_ui_case < 10)// 主菜单才能上下
+            //         g_main_ui_case--;
+            //     memset(tp, 0, sizeof(tp));
+            // }
         }
 
-        // 返回
-        if (60 < tp[0].x && tp[0].x < 180 && 60 < tp[0].y && tp[0].y < 220 &&
-            tp[0].x != tp[1].x && tp[0].y != tp[1].y)
-        {
-            if ((60 < tp[2].y && tp[2].y < 220 && 50 > tp[2].x &&
-                tp[3].x == 0 && tp[3].y == 0) ||
-                (60 < tp[3].y && tp[3].y < 220 && 50 > tp[3].x &&
-                tp[4].x == 0 && tp[4].y == 0) ||
-                (60 < tp[4].y && tp[4].y < 220 && 50 > tp[4].x &&
-                tp[5].x == 0 && tp[5].y == 0))
-            {
-                set_motor(1);
-                g_main_ui_case--;
-                memset(tp, 0, sizeof(tp));
-            }
-        }
+        // // 返回
+        // if (60 < tp[0].x && tp[0].x < 180 && 60 < tp[0].y && tp[0].y < 220 &&
+        //     tp[0].x != tp[1].x && tp[0].y != tp[1].y)
+        // {
+        //     for (uint8_t i=0; i<10; i++)
+        //     {
+        //         if (60 < tp[1+i].x && tp[1+i].x < 180 && 60 < tp[1+i].y && tp[1+i].y < 180 &&
+        //             tp[2+i].x == 0 && tp[2+i].y == 0)
+        //         {
+        //             set_motor(1);
+        //             g_main_ui_case--;
+        //             memset(tp, 0, sizeof(tp));
+        //             break;
+        //         }
+        //     }
+
+        //     // if ((60 < tp[2].y && tp[2].y < 220 && 50 > tp[2].x &&
+        //     //     tp[3].x == 0 && tp[3].y == 0) ||
+        //     //     (60 < tp[3].y && tp[3].y < 220 && 50 > tp[3].x &&
+        //     //     tp[4].x == 0 && tp[4].y == 0) ||
+        //     //     (60 < tp[4].y && tp[4].y < 220 && 50 > tp[4].x &&
+        //     //     tp[5].x == 0 && tp[5].y == 0))
+        //     // {
+        //     //     set_motor(1);
+        //     //     g_main_ui_case--;
+        //     //     memset(tp, 0, sizeof(tp));
+        //     // }
+        // }
 
         // 向左划，进子菜单
-        if (60 < tp[0].y && tp[0].y < 180 && 80 > tp[0].x &&
+        if (60 < tp[0].y && tp[0].y < 180 && tp[0].x < 60 &&
             tp[0].x != tp[1].x && tp[0].y != tp[1].y)
         {
-            if ((60 < tp[2].x && tp[2].x < 220 && 60 < tp[2].y && tp[2].y < 220 &&
-                tp[3].x == 0 && tp[3].y == 0) ||
-                (60 < tp[3].x && tp[3].x < 220 && 60 < tp[3].y && tp[3].y < 220 &&
-                tp[4].x == 0 && tp[4].y == 0) ||
-                (60 < tp[4].x && tp[4].x < 220 && 60 < tp[4].y && tp[4].y < 220 &&
-                tp[5].x == 0 && tp[5].y == 0))
+            for (uint8_t i=0; i<10; i++)
             {
-                set_motor(1);
-                if (g_main_ui_case < 20 && g_main_ui_case != 0)
-                    g_main_ui_case += 10;
-                memset(tp, 0, sizeof(tp));
+                if (60 < tp[1+i].x && tp[1+i].x < 180 && 60 < tp[1+i].y && tp[1+i].y < 180 &&
+                    tp[2+i].x == 0 && tp[2+i].y == 0)
+                {
+                    set_motor(1);
+                    if (g_main_ui_case < 20 && g_main_ui_case != 0)
+                        g_main_ui_case += 10;
+                    memset(tp, 0, sizeof(tp));
+                    break;
+                }
             }
+
+            // if ((60 < tp[2].x && tp[2].x < 220 && 60 < tp[2].y && tp[2].y < 220 &&
+            //     tp[3].x == 0 && tp[3].y == 0) ||
+            //     (60 < tp[3].x && tp[3].x < 220 && 60 < tp[3].y && tp[3].y < 220 &&
+            //     tp[4].x == 0 && tp[4].y == 0) ||
+            //     (60 < tp[4].x && tp[4].x < 220 && 60 < tp[4].y && tp[4].y < 220 &&
+            //     tp[5].x == 0 && tp[5].y == 0))
+            // {
+            //     set_motor(1);
+            //     if (g_main_ui_case < 20 && g_main_ui_case != 0)
+            //         g_main_ui_case += 10;
+            //     memset(tp, 0, sizeof(tp));
+            // }
         }
 
 
         // 向右划，返回上一层子菜单
-        if (60 < tp[0].y && tp[0].y < 180 && 160 < tp[0].x &&
+        if (60 < tp[0].y && tp[0].y < 180 && tp[0].x > 180 &&
             tp[0].x != tp[1].x && tp[0].y != tp[1].y)
         {
-            if ((60 < tp[2].x && tp[2].x < 220 && 60 < tp[2].y && tp[2].y < 220 &&
-                tp[3].x == 0 && tp[3].y == 0) ||
-                (60 < tp[3].x && tp[3].x < 220 && 60 < tp[3].y && tp[3].y < 220 &&
-                tp[4].x == 0 && tp[4].y == 0) ||
-                (60 < tp[4].x && tp[4].x < 220 && 60 < tp[4].y && tp[4].y < 220 &&
-                tp[5].x == 0 && tp[5].y == 0))
+            for (uint8_t i=0; i<10; i++)
             {
-                set_motor(1);
-                if (g_main_ui_case>10)
-                    g_main_ui_case -= 10;
-                memset(tp, 0, sizeof(tp));
+                if (60 < tp[1+i].x && tp[1+i].x < 180 && 60 < tp[1+i].y && tp[1+i].y < 180 &&
+                    tp[2+i].x == 0 && tp[2+i].y == 0)
+                {
+                    set_motor(1);
+                    if (g_main_ui_case>10)
+                        g_main_ui_case -= 10;
+                    memset(tp, 0, sizeof(tp));
+                    break;
+                }
             }
+            // if ((60 < tp[2].x && tp[2].x < 220 && 60 < tp[2].y && tp[2].y < 220 &&
+            //     tp[3].x == 0 && tp[3].y == 0) ||
+            //     (60 < tp[3].x && tp[3].x < 220 && 60 < tp[3].y && tp[3].y < 220 &&
+            //     tp[4].x == 0 && tp[4].y == 0) ||
+            //     (60 < tp[4].x && tp[4].x < 220 && 60 < tp[4].y && tp[4].y < 220 &&
+            //     tp[5].x == 0 && tp[5].y == 0))
+            // {
+            //     set_motor(1);
+            //     if (g_main_ui_case>10)
+            //         g_main_ui_case -= 10;
+            //     memset(tp, 0, sizeof(tp));
+            // }
         }
 
         // 主界面点击操作
+        static uint16_t press_func_count = 0;
         if (g_main_ui_case < 10 && g_main_ui_case != 0)
         {
             if (tp[0].x != 0 && tp[0].y != 0 &&
@@ -221,22 +301,29 @@ void loop()
                 60 < tp[0].x && tp[0].x < 180 && 
                 60 < tp[0].y && tp[0].y < 180)
             {
-                set_motor(1);
-                g_main_ui_case += 10;
-                memset(tp, 0, sizeof(tp));
-            }
-        }
+                delay(30);
+                press_func_count++;
 
+                if (press_func_count == 2)
+                {
+                    set_motor(1);
+                    g_main_ui_case += 10;
+                    memset(tp, 0, sizeof(tp));
+                }
+            }
+            else
+                press_func_count = 0;
+        }
 
         // 图标按键按下。返回表盘；已在表盘息屏
         static uint16_t press_main_count = 0;
         if (tp[0].x == 120 && tp[0].y == 320)
         {
-            set_motor(1);
-            delay(10);
+            delay(30);
             press_main_count++;
-            if (press_main_count > 1)
+            if (press_main_count == 2)
             {
+                set_motor(1);
                 if (g_main_ui_case == 0)
                 {
                     ledcWrite(4, 0);
@@ -250,32 +337,40 @@ void loop()
         }
         else
             press_main_count = 0;
+
+#ifdef DEBUG
+        Serial.printf("\r\nx: %d  y: %d", tp[0].x, tp[0].y);
+#endif
+    } // 触摸采集、判断结束
+
+
+
+#ifdef DEBUG
+    Serial.printf("\r\n%d", g_main_ui_case);
+#endif
+
+    { // 采集姿态
+        Wire.beginTransmission(0x68);
+        Wire.write(0x3B);
+        Wire.endTransmission(true);
+        Wire.requestFrom(0x68, 14, true);
+
+        o_AccX = AccX;
+        o_AccY = AccY;
+        o_AccZ = AccZ;
+        o_GyroX = GyroX;
+        o_GyroY = GyroY;
+        o_GyroZ = GyroZ;
+
+        AccX = Wire.read() << 8 | Wire.read();
+        AccY = Wire.read() << 8 | Wire.read();
+        AccZ = Wire.read() << 8 | Wire.read();
+        Temp = Wire.read() << 8 | Wire.read();
+        GyroX = Wire.read() << 8 | Wire.read();
+        GyroY = Wire.read() << 8 | Wire.read();
+        GyroZ = Wire.read() << 8 | Wire.read();
     }
 
-
-
-    // Serial.printf("\r\nx: %d  y: %d", tp[0].x, tp[0].y);
-    Serial.printf("\r\n%d", g_main_ui_case);
-
-    Wire.beginTransmission(0x68);
-    Wire.write(0x3B);
-    Wire.endTransmission(true);
-    Wire.requestFrom(0x68, 14, true);
-
-    o_AccX = AccX;
-    o_AccY = AccY;
-    o_AccZ = AccZ;
-    o_GyroX = GyroX;
-    o_GyroY = GyroY;
-    o_GyroZ = GyroZ;
-
-    AccX = Wire.read() << 8 | Wire.read();
-    AccY = Wire.read() << 8 | Wire.read();
-    AccZ = Wire.read() << 8 | Wire.read();
-    Temp = Wire.read() << 8 | Wire.read();
-    GyroX = Wire.read() << 8 | Wire.read();
-    GyroY = Wire.read() << 8 | Wire.read();
-    GyroZ = Wire.read() << 8 | Wire.read();
 
     // Serial.printf("\r\temp: %f", Temp / 340.00 + 36.53);
     // Serial.printf("\r\nax:%d ay:%d az:%d gx:%d gy:%d gz:%d", AccX, AccY, AccZ, GyroX, GyroY, GyroZ);
@@ -323,98 +418,108 @@ void loop()
     static uint8_t old_bat_charge_flag = 99;
     static uint8_t reflash_flag = 0;
 
-    if (g_main_ui_case<10)
+    // if (leda_flag == 0)
     {
-        g_main_ui_case = g_main_ui_case % 5;
-        g_main_ui_case = g_main_ui_case == -1 ? 4 : g_main_ui_case;
-    }
-
-
-    if (old_main_ui_case != g_main_ui_case)
-    {
-        old_main_ui_case = g_main_ui_case;
-        reflash_flag = 1;
-        lcd_clear(BLACK);
-    }
-    if (old_bat_charge_flag != g_bat_charge_flag || reflash_flag)
-    {
-        reflash_flag = 0;
-        old_bat_charge_flag = g_bat_charge_flag;
-        lcd_show_img_charge(g_bat_charge_flag);
-    }
-
-    if (reflash_flag ==1 || (g_main_ui_case == 0 && change_flag==1))
-    {
-        change_flag = 0;
-        lcd_show_img_bat(1);
-        lcd_show_img_wifi(g_bat_charge_flag);
-
-        char str[30] = {0};
-        switch (g_main_ui_case)
+        if (g_main_ui_case<10)
         {
-        case 0: // 表盘
-            ui_show_dial();
-            break;
+            g_main_ui_case = g_main_ui_case % 5;
+            g_main_ui_case = g_main_ui_case == -1 ? 4 : g_main_ui_case;
+        }
 
-        case 1: // 设备控制
-            ui_show_device();
-            break;
+        if (old_main_ui_case != g_main_ui_case)
+        {
+            old_main_ui_case = g_main_ui_case;
+            reflash_flag = 1;
+            lcd_clear(BLACK);
+        }
+        if (old_bat_charge_flag != g_bat_charge_flag || reflash_flag)
+        {
+            reflash_flag = 0;
+            old_bat_charge_flag = g_bat_charge_flag;
+            lcd_show_img_charge(g_bat_charge_flag);
+        }
 
-        case 2: // 游戏
-            ui_show_game();
-            break;
+        // if (reflash_flag || (g_main_ui_case == 0 && g_date_time.change_flag==1))
+        {
+            g_date_time.change_flag = 0;
+            lcd_show_img_bat(1);
+            lcd_show_img_wifi(g_bat_charge_flag);
 
-        case 3: // 设置
-            ui_show_set();
-            break;
+            char str[30] = {0};
+            switch (g_main_ui_case)
+            {
+            case 0: // 表盘
+                ui_show_dial();
+                break;
 
-        case 4: // 帮助
-            ui_show_help();
-            break;
+            case 1: // 设备控制
+                ui_show_device();
+                break;
 
-        case 11: // 设备界面一
-            lcd_show_img_device1(40, 80);
-            lcd_show_str( 12, 140, WHITE, BLACK, "氛 围 灯", 24, 1);
-            lcd_show_img_device2(148, 80);
-            lcd_show_str(132, 140, WHITE, BLACK, "智能插排", 24, 1);
-            break;
+            case 2: // 游戏
+                ui_show_game();
+                break;
 
-        case 12: // 游戏界面一
-            lcd_show_img_wait();
-            lcd_show_str(78, 200, WHITE, BLACK, "游 戏 一", 24, 1);
-            break;
+            case 3: // 设置
+                ui_show_set();
+                break;
 
-        case 13: // 设置界面一
-            lcd_show_img_wait();
-            lcd_show_str(78, 200, WHITE, BLACK, "设 置 一", 24, 1);
-            break;
+            case 4: // 帮助
+                ui_show_help();
+                break;
 
-        case 14: // 关于界面一
-            lcd_show_img_wait();
-            lcd_show_str(78, 200, WHITE, BLACK, "关 于 一", 24, 1);
-            break;
+            case 11: // 设备界面一
+                lcd_show_str(90, 0, WHITE, BLACK, "设 备", 24, 1);
+                lcd_show_img_device1(40, 80);
+                lcd_show_str( 12, 140, WHITE, BLACK, "氛 围 灯", 24, 1);
+                lcd_show_img_device2(148, 80);
+                lcd_show_str(132, 140, WHITE, BLACK, "智能插排", 24, 1);
+                break;
 
-        case 21: // 设备界面二（敬请期待）
-            lcd_show_img_wait();
-            lcd_show_str(78, 200, WHITE, BLACK, "设 备 二", 24, 1);
-            break;
-            
-        case 22: // 游戏界面二（敬请期待）
-            lcd_show_img_wait();
-            lcd_show_str(78, 200, WHITE, BLACK, "游 戏 二", 24, 1);
-            break;
+            case 21: // 设备界面二（敬请期待）
+                lcd_show_str(90, 0, WHITE, BLACK, "设 备", 24, 1);
+                lcd_show_img_wait();
+                lcd_show_str(78, 200, WHITE, BLACK, "设 备 二", 24, 1);
+                break;
 
-        case 23: // 设置界面二
-            lcd_show_img_wait();
-            lcd_show_str(78, 200, WHITE, BLACK, "设 置 二", 24, 1);
-            break;
+            case 12: // 游戏界面一
+                lcd_show_str(90, 0, WHITE, BLACK, "游 戏", 24, 1);
+                lcd_show_img_wait();
+                lcd_show_str(78, 200, WHITE, BLACK, "游 戏 一", 24, 1);
+                break;
 
-        case 24: // 关于界面二（敬请期待）
-            lcd_show_img_wait();
-            lcd_show_str(78, 200, WHITE, BLACK, "关 于 二", 24, 1);
-            break;
+            case 22: // 游戏界面二（敬请期待）
+                lcd_show_str(90, 0, WHITE, BLACK, "游 戏", 24, 1);
+                lcd_show_img_wait();
+                lcd_show_str(78, 200, WHITE, BLACK, "游 戏 二", 24, 1);
+                break;
 
-        default: break;
+            case 13: // 设置界面一
+                lcd_show_str(90, 0, WHITE, BLACK, "设 置", 24, 1);
+                lcd_show_img_wait();
+                lcd_show_str(78, 200, WHITE, BLACK, "设 置 一", 24, 1);
+                break;
+
+            case 23: // 设置界面二
+                lcd_show_str(90, 0, WHITE, BLACK, "设 置", 24, 1);
+                lcd_show_img_wait();
+                lcd_show_str(78, 200, WHITE, BLACK, "设 置 二", 24, 1);
+                break;
+
+            case 14: // 关于界面一
+                lcd_show_str(90, 0, WHITE, BLACK, "关 于", 24, 1);
+                lcd_show_img_wait();
+                lcd_show_str(78, 200, WHITE, BLACK, "关 于 一", 24, 1);
+                break;
+
+            case 24: // 关于界面二（敬请期待）
+                lcd_show_str(90, 0, WHITE, BLACK, "关 于", 24, 1);
+                lcd_show_img_wait();
+                lcd_show_str(78, 200, WHITE, BLACK, "关 于 二", 24, 1);
+                break;
+
+            default: break;
+            }
         }
     }
 
@@ -445,6 +550,11 @@ void loop()
                 Serial.printf("按键按下");
             }
 
+            if (key_pressed > 200)
+            {
+                ledcWrite(4, 255);
+                leda_flag = 1;
+            }
             key_pressed++;
         }
         else
