@@ -147,6 +147,7 @@ void loop()
             if (sec != -1 && minute != -1 && hour != -1 && wday != -1 && mday != -1 && month != -1 && year != -1)
             {
                 net_time_flag = 1; // 网络时间配置成功
+                g_wifi_connect_status = 1;
                 g_date_time.year = year-2000;
                 g_date_time.month = month;
                 g_date_time.day = mday;
@@ -154,6 +155,11 @@ void loop()
                 g_date_time.minute = minute;
                 g_date_time.sec = sec;
                 g_date_time.week = wday;
+            }
+            else
+            {
+                net_time_flag = 0;
+                g_wifi_connect_status = 0;
             }
         }
     }while(g_date_time.all_sec < 20 && net_time_flag == 0);
@@ -470,6 +476,8 @@ void loop()
             reflash_flag = 1;
             lcd_clear(BLACK);
         }
+
+         // 充电指示
         if (old_bat_charge_flag != g_bat_charge_flag || reflash_flag)
         {
             reflash_flag = 0;
@@ -479,9 +487,11 @@ void loop()
 
         // if (reflash_flag || (g_main_ui_case == 0 && g_date_time.change_flag==1))
         {
-            g_date_time.change_flag = 0;
+
+            g_bat_charge_flag = digitalRead(15) == LOW?1:0;
+            // g_date_time.change_flag = 0;
             lcd_show_img_bat(1);
-            lcd_show_img_wifi(g_bat_charge_flag);
+            lcd_show_img_wifi(g_wifi_connect_status); // wifi指示
 
             char str[30] = {0};
             switch (g_main_ui_case)
@@ -649,6 +659,7 @@ void heartbeat(void)
     int16_t year = Blinker.year();
     if (sec != -1 && minute != -1 && hour != -1 && wday != -1 && mday != -1 && month != -1 && year != -1)
     {
+        g_wifi_connect_status = 1;
         g_date_time.year = year-2000;
         g_date_time.month = month;
         g_date_time.day = mday;
@@ -657,7 +668,8 @@ void heartbeat(void)
         g_date_time.sec = sec;
         g_date_time.week = wday;
     }
-
+    else
+        g_wifi_connect_status = 0;
 }
 
 // void rgb_device_callback(const String & data)

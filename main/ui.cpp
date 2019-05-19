@@ -5,7 +5,7 @@
 
 int16_t g_main_ui_case = 0;
 uint8_t g_bat_charge_flag = 0;
-
+uint8_t g_wifi_connect_status = 0;
 void task_ui(void *pvParameters)
 {
     (void)pvParameters;
