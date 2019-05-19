@@ -677,7 +677,12 @@ void lcd_show_img_poweron(void)
 
 void lcd_show_img_school_name(void)
 {
-    lcd_show_img_bin(0, 36, 240, 46, WHITE, BLACK, img_bin_school_name, 1);
+    lcd_show_img_bin(0, 60, 240, 46, WHITE, BLACK, img_bin_school_name, 1);
+}
+
+void lcd_show_img_school_ico(void)
+{
+    lcd_show_img_bin(25, 35, 190, 190, WHITE, BLACK, img_bin_school_ico, 1);
 }
 
 void ui_show_dial(void)

@@ -359,6 +359,27 @@ void loop()
                 press_func_count = 0;
         }
 
+        if (g_main_ui_case > 10)
+        {
+            if (tp[0].x != 0 && tp[0].y != 0 &&
+                tp[0].x == tp[1].x && tp[0].y == tp[1].y &&
+                60 < tp[0].x && tp[0].x < 180 && 
+                60 < tp[0].y && tp[0].y < 180)
+            {
+                delay(10);
+                press_func_count++;
+
+                if (press_func_count == 2)
+                {
+                    set_motor(1);
+                    g_main_ui_case += 10;
+                    memset(tp, 0, sizeof(tp));
+                }
+            }
+            else
+                press_func_count = 0;
+        }
+
         // 图标按键按下。返回表盘；已在表盘息屏
         static uint16_t press_main_count = 0;
         if (tp[0].x == 120 && tp[0].y == 320)
@@ -520,7 +541,7 @@ void loop()
                 lcd_show_str(90, 0, WHITE, BLACK, "设 备", 24, 1);
                 lcd_show_img_device1(40, 80);
                 lcd_show_str( 12, 140, WHITE, BLACK, "氛 围 灯", 24, 1);
-                lcd_show_img_device2(148, 80);
+                lcd_show_img_device2(160, 80);
                 lcd_show_str(132, 140, WHITE, BLACK, "智能插排", 24, 1);
                 break;
 
@@ -546,7 +567,7 @@ void loop()
                 lcd_show_str(90, 0, WHITE, BLACK, "设 置", 24, 1);
                 lcd_show_img_bright(40, 80);
                 lcd_show_str( 12, 140, WHITE, BLACK, "屏幕亮度", 24, 1);
-                lcd_show_img_lock(148, 80);
+                lcd_show_img_lock(160, 80);
                 lcd_show_str(132, 140, WHITE, BLACK, "自动息屏", 24, 1);
                 break;
 
@@ -559,15 +580,14 @@ void loop()
             case 14: // 关于界面一
                 lcd_show_str(90, 0, WHITE, BLACK, "关 于", 24, 1);
                 lcd_show_img_school_name();
-                lcd_show_str(78, 130, WHITE, BLACK, "智能与电子工程学院", 24, 1);
-                lcd_show_str(78, 160, WHITE, BLACK, "电子15003", 24, 1);
-                lcd_show_str(78, 190, WHITE, BLACK, "康滢", 24, 1);
+                lcd_show_str(0, 130, WHITE, BLACK, "智能与电子工程学院", 24, 1);
+                lcd_show_str(0, 160, WHITE, BLACK, "电子15003", 24, 1);
+                lcd_show_str(0, 190, WHITE, BLACK, "康滢", 24, 1);
                 break;
 
             case 24: // 关于界面二（敬请期待）
                 lcd_show_str(90, 0, WHITE, BLACK, "关 于", 24, 1);
-                lcd_show_img_wait();
-                lcd_show_str(78, 200, WHITE, BLACK, "关 于 二", 24, 1);
+                lcd_show_img_school_ico();
                 break;
 
             default: break;
