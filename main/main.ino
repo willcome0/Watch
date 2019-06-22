@@ -62,7 +62,7 @@ void iic_get(void)
 #define ARDUINO_RUNNING_CORE 1
 #endif
 
-char auth[] = "b914310a8ac1";
+
 // char ssid[] = "will的iPhone";
 char ssid[] = "kangkang";
 char pswd[] = "kangkang";
@@ -71,9 +71,9 @@ uint8_t RR, GG, BB, Bright;
 uint8_t RR_Old, GG_Old, BB_Old;
 
 // 新建组件对象
-BlinkerBridge g_rgb_device("968276a8d249");
-BlinkerButton g_rgb_button("rgb_button");
-BlinkerRGB g_rgb_led("rgb_led");
+// BlinkerBridge g_rgb_device("b914310a8ac1");
+// BlinkerButton g_rgb_button("rgb_button");
+// BlinkerRGB g_rgb_led("rgb_led");
 
 void blinker_callback(const String &data);
 void heartbeat(void);
@@ -94,8 +94,11 @@ void setup()
     lcd_show_str(66, 200, WHITE, BLACK, "正在开机...", 24, 1);
 
     BLINKER_DEBUG.stream(Serial);
-    Blinker.begin("b914310a8ac1", ssid, pswd);
+    Blinker.begin("968276a8d249", ssid, pswd);
     Blinker.attachData(blinker_callback);
+
+    // g_rgb_device.attach(rgb_device_callback); // 氛围灯
+
     Blinker.attachHeartbeat(heartbeat);
     Blinker.setTimezone(8.0);
 
@@ -359,27 +362,28 @@ void loop()
                 press_func_count = 0;
         }
 
-        if (g_main_ui_case > 10)
-        {
-            if (tp[0].x != 0 && tp[0].y != 0 &&
-                tp[0].x == tp[1].x && tp[0].y == tp[1].y &&
-                60 < tp[0].x && tp[0].x < 180 && 
-                60 < tp[0].y && tp[0].y < 180)
-            {
-                delay(10);
-                press_func_count++;
+        // // 子菜单点击
+        // if (g_main_ui_case > 10)
+        // {
+        //     if (tp[0].x != 0 && tp[0].y != 0 &&
+        //         tp[0].x == tp[1].x && tp[0].y == tp[1].y &&
+        //         60 < tp[0].x && tp[0].x < 180 && 
+        //         60 < tp[0].y && tp[0].y < 180)
+        //     {
+        //         delay(10);
+        //         press_func_count++;
 
-                if (press_func_count == 2)
-                {
-                    set_motor(1);
-                    g_main_ui_case += 10;
-                    memset(tp, 0, sizeof(tp));
-                }
-            }
-            else
-                press_func_count = 0;
-        }
-
+        //         if (press_func_count == 2)
+        //         {
+        //             set_motor(1);
+        //             g_main_ui_case += 10;
+        //             memset(tp, 0, sizeof(tp));
+        //         }
+        //     }
+        //     else
+        //         press_func_count = 0;
+        // }
+    
         // 图标按键按下。返回表盘；已在表盘息屏
         static uint16_t press_main_count = 0;
         if (tp[0].x == 120 && tp[0].y == 320)
@@ -415,6 +419,17 @@ void loop()
 #endif
 
     { // 采集姿态
+        static int16_t accx[20] = {0};
+        static int16_t accy[20] = {0};
+        static int16_t accz[20] = {0};
+
+        for (uint8_t i=1; i<20; i++)
+        {
+            // accx[20-i] = accx[19-i];
+            // accy[20-i] = accy[19-i];
+            accz[20-i] = accz[19-i];
+        }
+
         Wire.beginTransmission(0x68);
         Wire.write(0x3B);
         Wire.endTransmission(true);
@@ -434,6 +449,48 @@ void loop()
         GyroX = Wire.read() << 8 | Wire.read();
         GyroY = Wire.read() << 8 | Wire.read();
         GyroZ = Wire.read() << 8 | Wire.read();
+
+        accx[0] = AccX; accy[0] = AccY; accz[0] = AccZ;
+
+        if (leda_flag == 0)
+        {
+            if (accz[0] < -13000)
+            {
+                for (uint8_t i=1; i<20; i++)
+                {
+                    if (accz[i] > -7000) // 抬腕
+                    {
+                        ledcWrite(4, 255);
+                        leda_flag = 1;
+                    }
+                }
+            }
+        }
+
+
+#ifdef MPU_DEBUG
+        Serial.print("Ax = ");//向串口打印输出结果
+        Serial.print(AccX);
+        Serial.print('\t');
+        Serial.print("Ay = ");
+        Serial.print(AccY);
+        Serial.print('\t');
+        Serial.print("Az = ");
+        Serial.print(AccZ);
+        Serial.print('\t');
+        Serial.print("temperature = ");
+        Serial.print(Temp);
+        Serial.print('\t');
+        Serial.print("Cx = ");
+        Serial.print(GyroX);
+        Serial.print('\t');
+        Serial.print("Cy = ");
+        Serial.print(GyroY);
+        Serial.print('\t');
+        Serial.print("Cz = ");
+        Serial.println(GyroZ);
+#endif
+  
     }
 
 
@@ -453,8 +510,8 @@ void loop()
         first_static_time;
     if (leda_flag == 1) // 只有屏幕亮时才会判断静止
     {
-        if (abs(o_AccX - AccX) < 300 && abs(o_AccY - AccY) < 300 && abs(o_AccZ - AccZ) < 300 &&
-            abs(o_GyroX - GyroX) < 80 && (o_GyroY - GyroY) < 80 && (o_GyroZ - GyroZ) < 80)
+        if (abs(o_AccX - AccX) < 500 && abs(o_AccY - AccY) < 500 && abs(o_AccZ - AccZ) < 500 &&
+            abs(o_GyroX - GyroX) < 150 && (o_GyroY - GyroY) < 150 && (o_GyroZ - GyroZ) < 150)
         {
             if (first_static_time == 0)
             {
